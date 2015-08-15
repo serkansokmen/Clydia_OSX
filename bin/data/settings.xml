@@ -1,12 +1,15 @@
 <group>
-	<Track_Color>7, 0, 2, 255</Track_Color>
-	<Threshold>35.85</Threshold>
-	<Camera_X>1004.8</Camera_X>
-	<Camera_Y>561.6</Camera_Y>
-	<Draw_Debug>1</Draw_Debug>
+	<Track_Color>252, 168, 137, 255</Track_Color>
+	<Threshold>15</Threshold>
+	<Camera_X>647.68</Camera_X>
+	<Camera_Y>472.56</Camera_Y>
+	<Draw_Debug>0</Draw_Debug>
 	<Draw_Video>1</Draw_Video>
-	<Clear_on_Draw>1</Clear_on_Draw>
-<group/>
-<Use_Difference>1</Use_Difference>
+	<Clear_on_Draw>0</Clear_on_Draw>
+	<Use_Difference>0</Use_Difference>
 	<Use_Color>0</Use_Color>
+<group/>
+<Track_with_Camera>0</Track_with_Camera>
+<Color_to_Track>0, 0, 0, 255</Color_to_Track>
+	<Speed>0.05485</Speed>
 </group>

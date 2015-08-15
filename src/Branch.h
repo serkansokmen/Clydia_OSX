@@ -2,10 +2,11 @@
 
 #include "ofMain.h"
 
-const int CL_BRANCH_AGE_MIN = 100;
-const int CL_BRANCH_AGE_MAX = 200;
-const int CL_BRANCH_AGING_COEFF_MIN = 1;
-const int CL_BRANCH_AGING_COEFF_MAX = 10;
+const int CL_BRANCH_AGE_MIN = 80;
+const int CL_BRANCH_AGE_MAX = 800;
+const int CL_BRANCH_AGING_COEFF_MIN = 2.f;
+const int CL_BRANCH_AGING_COEFF_MAX = 6.f;
+const float CL_BRANCH_TAIL_LENGTH = 64.f;
 
 enum clBranchLifeState
 {
@@ -41,20 +42,25 @@ public:
     ~Branch();
     
 	void setup(const ofPoint &pos, const ofRectangle &b);
-	void update();
+	void update(const float &speed);
 	void draw();
     
-    ofVec2f getPosition() const { return b_pos; }
-    int     getAge() const      { return age; }
-	
-    bool getIsAlive() const
+    inline ofVec2f getPosition() const {
+        return b_pos;
+    }
+    inline int getAge() const      {
+        return age;
+    }
+    inline void setDrawMode(clBranchDrawMode mode) {
+        drawMode = mode;
+    }
+    inline bool getIsAlive() const
     {
         if (lifeState == CL_BRANCH_DEAD)
             return false;
         return true;
     }
     
-    void setDrawMode(clBranchDrawMode mode) { drawMode = mode; }
 	
 	vector <ofPoint*> positions;
 };

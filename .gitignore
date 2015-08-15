@@ -1,81 +1,91 @@
-###########################
 
-.externalToolBuilders
-# ignore generated binaries
-# XCode
+# OF-specific ignore patterns
 
-# but not the data folder
+openFrameworks.a
+openFrameworksDebug.a
+openFrameworksUniversal.a
+
+#rule to avoid non-official addons going into git
+#see addons/.gitignore
+addons/*
+
+#rule to avoid non-official apps going into git
+#see apps/.gitignore
+apps/*
+!apps/ios
+
+#also, see examples/.gitignore
+
+# Some general ignore patterns
+
+build/
+obj/
+*.o
+Debug*/
+Release*/
+*.mode*
+*.app/
+*.pyc
+.svn/
+
+# IDE-specific ignore patterns
+
+#XCode
 *.pbxuser
-##################
-###########################
 *.perspective
-# operating system
-
 *.perspectivev3
-##################
-/bin/*
 *.mode1v3
-
-!/bin/data/
 *.mode2v3
-# Linux
-
-# XCode 4
-*~
-#########
+#XCode 4
 xcuserdata
-# KDE
-# general
 *.xcworkspace
-.directory
-#########
 
+#Code::Blocks
+*.depend
+*.layout
+
+#Visual Studio
+*.sdf
+*.opensdf
+*.suo
+ipch/
+
+#Eclipse
+.metadata
+local.properties
+.externalToolBuilders
+
+# OS-specific ignore patterns
+
+#Linux
+*~
+# KDE
+.directory
 .AppleDouble
 
-# Code::Blocks
-
-[Bb]uild/
-*.depend
-# OSX
-[Oo]bj/
-*.layout
+#OSX
 .DS_Store
-*.o
-
 *.swp
-[Dd]ebug*/
-# Visual Studio
 *~.nib
-[Rr]elease*/
-*.sdf
 # Thumbnails
-*.mode*
-*.opensdf
 ._*
-*.app/
-*.suo
 
-*.pyc
-*.pdb
-# Windows
-.svn/
-*.ilk
-# Image file caches
-*.log
-*.aps
+#Windows
+# Windows image file caches
 Thumbs.db
-
-ipch/
 # Folder config file
-########################
-
 Desktop.ini
-# IDE files which should
-# Eclipse
 
-# be ignored
-.metadata
-# Android
-########################
-local.properties
+#Android
 .csettings
+/libs/openFrameworksCompiled/project/android/paths.make
+
+# Miscellaneous
+.mailmap
+
+# Ignore data folder
+bin/data/
+
+*.xml
+*.eps
+*.psd
