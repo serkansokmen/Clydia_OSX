@@ -1,8 +1,10 @@
 #include "ofApp.h"
 
-#define CAM_WIDTH       320
-#define CAM_HEIGHT      240
-#define MAX_BRANCHES    400
+#define CAM_WIDTH           320
+#define CAM_HEIGHT          240
+#define MAX_BRANCHES        1600
+#define IMAGE_DRAW_RES_X    20
+#define IMAGE_DRAW_RES_Y    20
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -50,14 +52,17 @@ void ofApp::update(){
     
     //app timebase, to send to all animatable objects
     float dt = 1.0f / 60.0f;
-    animator.speed = pointSpeed;
-    animator.radiusX = pointRadiusX;
-    animator.radiusY = pointRadiusY;
-    animator.update(dt);
-    if (animator.color.getTargetColor() != branchColor) {
-        animator.colorTo(branchColor);
+    
+    if (bUseAnimator) {
+        animator.speed = pointSpeed;
+        animator.radiusX = pointRadiusX;
+        animator.radiusY = pointRadiusY;
+        animator.update(dt);
+        if (animator.color.getTargetColor() != branchColor) {
+            animator.colorTo(branchColor);
+        }
+        addBranchAt(animator.point.getCurrentPosition(), branchColor);
     }
-    addBranchAt(animator.point.getCurrentPosition());
     
     if (bUseCamera && cam.isInitialized()) {
         cam.update();
@@ -75,24 +80,20 @@ void ofApp::update(){
             tPos->x = ofMap(centroid.x, 0, cam.getWidth(), 0, ofGetWidth());
             tPos->y = ofMap(centroid.y, 0, cam.getHeight(), 0, ofGetHeight());
             
-            addBranchAt(*tPos);
+            addBranchAt(*tPos, branchColor);
         }
     }
     
-    // update clydias
-    if (branches.size() < MAX_BRANCHES) {
-        for (int i=0; i<branches.size(); i++) {
-            auto b = branches[i];
-            if (b->getIsAlive()) {
-                b->update(pointSpeed*0.1f);
-            } else {
-                delete b;
-                b = 0;
-                branches.erase(branches.begin()+i);
-            }
+    // Update branches
+    for (int i=0; i<branches.size(); i++) {
+        auto b = branches[i];
+        if (b->getIsAlive()) {
+            b->update(pointSpeed*0.1f);
+        } else {
+            delete b;
+            b = 0;
+            branches.erase(branches.begin()+i);
         }
-    } else {
-        branches.erase(branches.begin());
     }
     
     // Draw to fbo
@@ -103,10 +104,6 @@ void ofApp::update(){
         b->draw();
     }
     fbo.end();
-    
-    if (bDrawGui) {
-        gui.setBackgroundColor(branchColor);
-    }
 }
 
 //--------------------------------------------------------------
@@ -116,16 +113,19 @@ void ofApp::draw(){
     ofBackgroundGradient(ofColor::black, ofColor::black, OF_GRADIENT_CIRCULAR);
     
     fbo.draw(0, 0);
-
-    ofPushStyle();
-    ofSetColor(255);
-    ofNoFill();
-    ofSetLineWidth(2.0f);
-    ofDrawCircle(animator.point.getCurrentPosition(), 20);
-    ofSetColor(255, 20);
-    ofFill();
-    ofDrawCircle(animator.point.getCurrentPosition(), 18);
-    ofPopStyle();
+    
+    if (bUseAnimator) {
+        ofPushStyle();
+        ofSetColor(255);
+        ofNoFill();
+        ofSetLineWidth(2.0f);
+        ofDrawCircle(animator.point.getCurrentPosition(), 20);
+        ofSetColor(255, 20);
+        ofFill();
+        ofDrawCircle(animator.point.getCurrentPosition(), 18);
+        ofPopStyle();
+    }
+    
     
     ofxCv::RectTracker& tracker = contourFinder.getTracker();
     
@@ -197,7 +197,7 @@ void ofApp::mouseMoved(int x, int y ){
 void ofApp::mouseDragged(int x, int y, int button){
     
     animator.moveTo(ofPoint(x, y), true);
-    addBranchAt(ofVec2f(x, y));
+    addBranchAt(ofVec2f(x, y), branchColor);
 }
 
 //--------------------------------------------------------------
@@ -240,15 +240,50 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::dragEvent(ofDragInfo dragInfo){
+    
+    clearCanvas();
+    
+    ofPoint pos(ofGetWindowRect().getCenter());
+    
+    if( dragInfo.files.size() > 0 ){
+        for(unsigned int k = 0; k < dragInfo.files.size(); k++){
+            ofImage img;
+            if (img.load(dragInfo.files[k])) {
+                pos.x -= img.getWidth()/2;
+                pos.y -= img.getHeight()/2;
+                addBranchesFromImage(img, pos);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::addBranchAt(const ofVec2f &pos)
+void ofApp::addBranchesFromImage(const ofImage& image, const ofVec2f& pos) {
+    
+    ofLog() << "Adding images" << endl;
+    ofLog() << "width: " << image.getWidth() << endl;
+    ofLog() << "height: " << image.getHeight() << endl;
+    
+    for (int i = 0; i < image.getWidth(); i += IMAGE_DRAW_RES_X){
+        for (int j = 0; j < image.getHeight(); j += IMAGE_DRAW_RES_Y){
+            auto c = image.getColor(i, j);
+//            if (c.getLightness() > 5.f) {
+                addBranchAt(pos + ofVec2f(i, j), image.getColor(i, j));
+//            }
+        }
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::addBranchAt(const ofVec2f &pos, const ofColor& color)
 {
+    if (branches.size() > MAX_BRANCHES) {
+        ofLog() << "Max branch count reached." << endl;
+        return;
+    }
     Branch *branch = new Branch;
-    branch->setup(branchColor, pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
+    branch->setup(color, pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
     branch->setDrawMode(CL_BRANCH_DRAW_LEAVES);
     branches.push_back(branch);
 }
@@ -287,7 +322,7 @@ void ofApp::setupGui(){
     gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
     gui.add(pointRadiusX.setup("Radius X", 600, ofGetWindowWidth()*0.08f, ofGetWindowWidth()*0.8f));
     gui.add(pointRadiusY.setup("Radius Y", 600, ofGetHeight()*0.08f, ofGetHeight()*0.8f));
-    
+    gui.add(bUseAnimator.setup("Use Animator", false));
     
     gui.add(trackingLabel.setup("Tracking", ""));
     gui.add(bUseCamera.setup("Track with Camera", false));
@@ -320,3 +355,4 @@ void ofApp::exit(){
     bUseHSV.removeListener(this, &ofApp::toggleColorMode);
     bUseCamera.removeListener(this, &ofApp::toggleCamera);
 }
+

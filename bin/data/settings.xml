@@ -1,10 +1,10 @@
 <group>
 	<Track_Color>252, 168, 137, 255</Track_Color>
 	<Threshold>15</Threshold>
-	<Camera_X>647.68</Camera_X>
-	<Camera_Y>472.56</Camera_Y>
+	<Camera_X>301.32</Camera_X>
+	<Camera_Y>110.52</Camera_Y>
 	<Draw_Debug>0</Draw_Debug>
-	<Draw_Video>1</Draw_Video>
+	<Draw_Video>0</Draw_Video>
 	<Clear_on_Draw>0</Clear_on_Draw>
 	<Use_Difference>0</Use_Difference>
 	<Use_Color>0</Use_Color>
@@ -15,8 +15,9 @@
 <Branch_Color>210, 210, 140, 255</Branch_Color>
 <Drawing/>
 	<Tracking/>
-	<Use_HSV>1</Use_HSV>
+	<Use_HSV>0</Use_HSV>
 	<General/>
-<Radius_X>600</Radius_X>
-	<Radius_Y>600</Radius_Y>
+<Radius_X>238.95</Radius_X>
+	<Radius_Y>142.106</Radius_Y>
+<Use_Animator>0</Use_Animator>
 </group>

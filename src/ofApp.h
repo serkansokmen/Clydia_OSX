@@ -15,8 +15,10 @@ private:
     void clearCanvas();
     void saveCanvas();
     void thresholdChanged(int& threshold);
-    void addBranchAt(const ofVec2f& pos);
+    void addBranchAt(const ofVec2f& pos, const ofColor& color);
     void setupGui();
+    
+    void addBranchesFromImage(const ofImage& image, const ofVec2f& pos);
     
     ofVideoGrabber cam;
     
@@ -45,6 +47,7 @@ private:
     ofxToggle       bClearOnDraw;
     ofxToggle       bUseDiff;
     ofxButton       clearBtn;
+    ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
     ofxPanel        gui;
     
