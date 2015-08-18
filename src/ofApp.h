@@ -4,31 +4,44 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "Branch.h"
+#include "PointAnimator.h"
 #include "ofxAnimatableOfPoint.h"
-
 
 class ofApp : public ofBaseApp{
     
 private:
-    void toggleCamera(bool & isOpen);
+    void toggleCamera(bool& isOpen);
+    void toggleColorMode(bool& isHsv);
     void clearCanvas();
     void saveCanvas();
-    void thresholdChanged(int & threshold);
-    void addBranchAt(const ofVec2f &pos);
+    void thresholdChanged(int& threshold);
+    void addBranchAt(const ofVec2f& pos);
+    void setupGui();
     
     ofVideoGrabber cam;
     
     ofxCv::ContourFinder contourFinder;
     ofxCv::TrackingColorMode trackingColorMode;
     
+    ofxToggle       bUseCamera;
+    
+    ofxLabel        drawingLabel;
+    ofxLabel        trackingLabel;
+    ofxLabel        generalLabel;
+    
+    ofxColorSlider  branchColor;
     ofxColorSlider  targetColor;
     ofxFloatSlider  threshold;
     ofxFloatSlider  camX;
     ofxFloatSlider  camY;
+    
     ofxFloatSlider  pointSpeed;
+    ofxFloatSlider  pointRadiusX;
+    ofxFloatSlider  pointRadiusY;
+    
+    ofxToggle       bUseHSV;
     ofxToggle       bDrawDebug;
     ofxToggle       bDrawVideo;
-    ofxToggle       bUseCamera;
     ofxToggle       bClearOnDraw;
     ofxToggle       bUseDiff;
     ofxButton       clearBtn;
@@ -36,20 +49,12 @@ private:
     ofxPanel        gui;
     
     ofFbo           fbo;
-    ofVec2f         *touchPos;
     
-    ofxAnimatableOfPoint    pointAnim;
-    float                   radiusX;
-    float                   radiusY;
-    float                   angle;
-    
-    
-    // Clydias
-    vector<Branch*>	branches;
-    
-    bool bClearCanvas;
-    bool bSaveCanvas;
     bool bDrawGui;
+    
+    PointAnimator   animator;
+    // Branches
+    vector<Branch*>	branches;
     
     
 public:

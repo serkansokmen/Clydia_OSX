@@ -12,4 +12,11 @@
 <Track_with_Camera>0</Track_with_Camera>
 <Color_to_Track>0, 0, 0, 255</Color_to_Track>
 	<Speed>0.05485</Speed>
+<Branch_Color>210, 210, 140, 255</Branch_Color>
+<Drawing/>
+	<Tracking/>
+	<Use_HSV>1</Use_HSV>
+	<General/>
+<Radius_X>600</Radius_X>
+	<Radius_Y>600</Radius_Y>
 </group>

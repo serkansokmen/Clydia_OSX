@@ -2,11 +2,11 @@
 
 #include "ofMain.h"
 
-const int CL_BRANCH_AGE_MIN = 80;
-const int CL_BRANCH_AGE_MAX = 800;
-const int CL_BRANCH_AGING_COEFF_MIN = 2.f;
-const int CL_BRANCH_AGING_COEFF_MAX = 6.f;
-const float CL_BRANCH_TAIL_LENGTH = 64.f;
+#define CL_BRANCH_AGE_MIN           80
+#define CL_BRANCH_AGE_MAX           800
+#define CL_BRANCH_AGING_COEFF_MIN   2.f
+#define CL_BRANCH_AGING_COEFF_MAX   6.f
+#define CL_BRANCH_TAIL_LENGTH       64.f
 
 enum clBranchLifeState
 {
@@ -41,7 +41,7 @@ private:
 public:
     ~Branch();
     
-	void setup(const ofPoint &pos, const ofRectangle &b);
+	void setup(const ofColor &color, const ofPoint &pos, const ofRectangle &b);
 	void update(const float &speed);
 	void draw();
     

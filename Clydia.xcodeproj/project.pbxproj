@@ -11,6 +11,7 @@
 		203B52661B7D6CAC00C9808A /* ofxAnimatableFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203B525F1B7D6CAC00C9808A /* ofxAnimatableFloat.cpp */; };
 		203B52671B7D6CAC00C9808A /* ofxAnimatableOfColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203B52611B7D6CAC00C9808A /* ofxAnimatableOfColor.cpp */; };
 		203B52681B7D6CAC00C9808A /* ofxAnimatableOfPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203B52631B7D6CAC00C9808A /* ofxAnimatableOfPoint.cpp */; };
+		208425241B825B2D0058C621 /* PointAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 208425221B825B2D0058C621 /* PointAnimator.cpp */; };
 		20D528961B7D4A3D00E4C841 /* ofxBaseGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D528851B7D4A3D00E4C841 /* ofxBaseGui.cpp */; };
 		20D528971B7D4A3D00E4C841 /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D528871B7D4A3D00E4C841 /* ofxButton.cpp */; };
 		20D528981B7D4A3D00E4C841 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D5288A1B7D4A3D00E4C841 /* ofxGuiGroup.cpp */; };
@@ -77,6 +78,8 @@
 		203B52621B7D6CAC00C9808A /* ofxAnimatableOfColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfColor.h; sourceTree = "<group>"; };
 		203B52631B7D6CAC00C9808A /* ofxAnimatableOfPoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableOfPoint.cpp; sourceTree = "<group>"; };
 		203B52641B7D6CAC00C9808A /* ofxAnimatableOfPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfPoint.h; sourceTree = "<group>"; };
+		208425221B825B2D0058C621 /* PointAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointAnimator.cpp; sourceTree = "<group>"; };
+		208425231B825B2D0058C621 /* PointAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointAnimator.h; sourceTree = "<group>"; };
 		20D528851B7D4A3D00E4C841 /* ofxBaseGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBaseGui.cpp; sourceTree = "<group>"; };
 		20D528861B7D4A3D00E4C841 /* ofxBaseGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBaseGui.h; sourceTree = "<group>"; };
 		20D528871B7D4A3D00E4C841 /* ofxButton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxButton.cpp; sourceTree = "<group>"; };
@@ -365,6 +368,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				20D5289E1B7D4A9800E4C841 /* Branch.cpp */,
 				20D5289F1B7D4A9800E4C841 /* Branch.h */,
+				208425221B825B2D0058C621 /* PointAnimator.cpp */,
+				208425231B825B2D0058C621 /* PointAnimator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -483,6 +488,7 @@
 				20D528D01B7D4AF900E4C841 /* Flow.cpp in Sources */,
 				20D528D11B7D4AF900E4C841 /* Helpers.cpp in Sources */,
 				20D528D21B7D4AF900E4C841 /* Kalman.cpp in Sources */,
+				208425241B825B2D0058C621 /* PointAnimator.cpp in Sources */,
 				203B52651B7D6CAC00C9808A /* ofxAnimatable.cpp in Sources */,
 				203B52681B7D6CAC00C9808A /* ofxAnimatableOfPoint.cpp in Sources */,
 				20D528CF1B7D4AF900E4C841 /* Distance.cpp in Sources */,
@@ -587,7 +593,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/libs/CLD/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/libs/CLD/include/ ../../../addons/ofxEmscripten/libs/html5audio/include/ ../../../addons/ofxEmscripten/libs/html5video/include/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -612,7 +618,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/libs/CLD/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxCv/../ofxOpenCv/libs/opencv/include ../../../addons/ofxCv/libs/ofxCv/include/ ../../../addons/ofxCv/libs/CLD/include/ ../../../addons/ofxEmscripten/libs/html5audio/include/ ../../../addons/ofxEmscripten/libs/html5video/include/";
 				WRAPPER_EXTENSION = app;
 				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
 			};

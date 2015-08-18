@@ -10,7 +10,7 @@ Branch::~Branch()
 }
 
 
-void Branch::setup(const ofPoint &pos, const ofRectangle &b)
+void Branch::setup(const ofColor &color, const ofPoint &pos, const ofRectangle &b)
 {
     lifeState = CL_BRANCH_SPAWNING;
     drawMode = CL_BRANCH_DRAW_LEAVES;
@@ -27,16 +27,12 @@ void Branch::setup(const ofPoint &pos, const ofRectangle &b)
 	
 	border.set(b);
     
-    float red = 0;
-	float green = ofMap(ageOfDeath,
-                        CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX,
-                        0.f, 255.f) * ofRandom(100, 255);
-	float blue = 0;
     float alpha = ofMap(ageOfDeath,
                         CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX,
-                        100.f, 255.f);
+                        10.f, 255.f);
 	
-    color.set(red, green, blue, alpha);
+    this->color.set(color);
+    this->color.a = alpha;
 }
 
 
