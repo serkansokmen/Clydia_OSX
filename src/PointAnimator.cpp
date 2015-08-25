@@ -25,7 +25,8 @@ void PointAnimator::setup(const ofPoint& center, const ofColor& color){
     this->point.setPosition(center);
     this->point.setDuration(1);
     this->point.setRepeatType(PLAY_ONCE);
-    this->point.setCurve(EASE_OUT_ELASTIC);
+//    this->point.setCurve(EASE_OUT_ELASTIC);
+    this->point.setCurve(EASE_IN_EASE_OUT);
 }
 
 void PointAnimator::update(float dt){

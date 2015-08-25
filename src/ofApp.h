@@ -8,15 +8,17 @@
 #include "ofxAnimatableOfPoint.h"
 
 class ofApp : public ofBaseApp{
-    
+
 private:
     void toggleCamera(bool& isOpen);
     void toggleColorMode(bool& isHsv);
     void clearCanvas();
     void saveCanvas();
     void thresholdChanged(int& threshold);
-    void addBranchAt(const ofVec2f& pos);
+    void addBranchAt(const ofVec2f& pos, const ofColor& color);
     void setupGui();
+    
+    void addBranchesFromImage(const ofImage& image, const ofVec2f& pos);
     
     ofVideoGrabber cam;
     
@@ -36,15 +38,17 @@ private:
     ofxFloatSlider  camY;
     
     ofxFloatSlider  pointSpeed;
+    ofxFloatSlider  branchDiffusion;
     ofxFloatSlider  pointRadiusX;
     ofxFloatSlider  pointRadiusY;
     
     ofxToggle       bUseHSV;
     ofxToggle       bDrawDebug;
     ofxToggle       bDrawVideo;
-    ofxToggle       bClearOnDraw;
     ofxToggle       bUseDiff;
+    ofxToggle       bBlackAndWhite;
     ofxButton       clearBtn;
+    ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
     ofxPanel        gui;
     

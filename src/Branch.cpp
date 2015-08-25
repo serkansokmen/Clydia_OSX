@@ -10,7 +10,7 @@ Branch::~Branch()
 }
 
 
-void Branch::setup(const ofColor &color, const ofPoint &pos, const ofRectangle &b)
+void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 {
     lifeState = CL_BRANCH_SPAWNING;
     drawMode = CL_BRANCH_DRAW_LEAVES;
@@ -22,8 +22,8 @@ void Branch::setup(const ofColor &color, const ofPoint &pos, const ofRectangle &
     theta = 0.0f;
 	
 	b_pos.set(pos);
-    b_vel.set(ofRandomf()*0.1f, ofRandomf()*0.1f);
-    b_acc.set(0.009, -0.016);
+    b_vel.set(ofRandomf()*0.1f, ofRandomf()*0.1f, ofRandomf()*0.1f);
+    b_acc.set(0.009, -0.016, -0.24);
 	
 	border.set(b);
     
@@ -36,7 +36,7 @@ void Branch::setup(const ofColor &color, const ofPoint &pos, const ofRectangle &
 }
 
 
-void Branch::update(const float &speed)
+void Branch::update(const float& speed, const float& diffusion, const ofColor& color)
 {
 	switch (lifeState)
     {
@@ -46,8 +46,8 @@ void Branch::update(const float &speed)
                 age += ageCoeff;
                 theta += speed;
                 
-                b_acc.set(ofRandomf(), ofRandomf());
-                b_acc *= ofRandomf()*0.1f;
+                b_acc.set(ofRandomf(), ofRandomf(), ofRandomf());
+                b_acc *= ofRandomf()*diffusion;
                 b_vel += b_acc;
                 b_pos += b_vel;
                 
@@ -84,10 +84,11 @@ void Branch::draw()
         case CL_BRANCH_DRAW_LEAVES:
         {
             ofFill();
-            ofSetColor(color);
+            
             ofSetPolyMode(OF_POLY_WINDING_NONZERO);
             ofBeginShape();
             for (auto p : positions) {
+                ofSetColor(color);
                 ofVertex(p->x, p->y);
             }
             ofEndShape(false);

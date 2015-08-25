@@ -26,9 +26,9 @@ private:
     clBranchLifeState lifeState;
     clBranchDrawMode  drawMode;
 	
-	ofVec2f	b_pos;
-	ofVec2f	b_acc;
-	ofVec2f	b_vel;
+	ofPoint	b_pos;
+	ofPoint	b_acc;
+	ofPoint	b_vel;
     
     int age;
     int ageOfDeath;
@@ -41,11 +41,11 @@ private:
 public:
     ~Branch();
     
-	void setup(const ofColor &color, const ofPoint &pos, const ofRectangle &b);
-	void update(const float &speed);
+	void setup(const ofColor& color, const ofPoint& pos, const ofRectangle& b);
+	void update(const float& speed, const float& diffusion, const ofColor& color);
 	void draw();
     
-    inline ofVec2f getPosition() const {
+    inline ofPoint getPosition() const {
         return b_pos;
     }
     inline int getAge() const      {
