@@ -34,6 +34,7 @@ private:
     int ageOfDeath;
     int ageCoeff;
     float theta;
+    float alpha;
     
 	ofColor		color;
 	ofRectangle border;

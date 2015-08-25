@@ -23,14 +23,11 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 	
 	b_pos.set(pos);
     b_vel.set(ofRandomf()*0.1f, ofRandomf()*0.1f, ofRandomf()*0.1f);
-    b_acc.set(0.009, -0.016, -0.24);
+    b_acc.set(0.009, -0.016, ofRandomf()*100.f);
 	
 	border.set(b);
     
-    float alpha = ofMap(ageOfDeath,
-                        CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX,
-                        10.f, 255.f);
-	
+    alpha = ofNormalize(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX) * color.a;
     this->color.set(color);
     this->color.a = alpha;
 }
@@ -38,6 +35,9 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 
 void Branch::update(const float& speed, const float& diffusion, const ofColor& color)
 {
+    alpha = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0);
+    this->color.a = alpha;
+
 	switch (lifeState)
     {
         case CL_BRANCH_SPAWNING:

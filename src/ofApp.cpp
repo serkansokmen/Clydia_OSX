@@ -5,6 +5,8 @@
 #define MAX_BRANCHES        3200
 #define IMAGE_DRAW_RES_X    50
 #define IMAGE_DRAW_RES_Y    50
+#define DIFFUSION_MIN       0.01f
+#define DIFFUSION_MAX       0.40f
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -98,7 +100,7 @@ void ofApp::update(){
     
     // Draw to fbo
     fbo.begin();
-    ofEnableDepthTest();
+//    ofEnableDepthTest();
     ofPushMatrix();
     for (auto b : branches) {
         ofSetColor(255);
@@ -106,7 +108,7 @@ void ofApp::update(){
         b->draw();
     }
     ofPopMatrix();
-    ofDisableDepthTest();
+//    ofDisableDepthTest();
     fbo.end();
 }
 
@@ -123,15 +125,18 @@ void ofApp::draw(){
     
     fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
     
+    float diff = ofNormalize(branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
+    
     if (bUseAnimator) {
         ofPushStyle();
         ofSetColor(255);
         ofNoFill();
-        ofSetLineWidth(2.0f);
-        ofDrawCircle(animator.point.getCurrentPosition(), 20);
+        ofSetCircleResolution(100.f);
+        ofSetLineWidth(diff);
+        ofDrawCircle(animator.point.getCurrentPosition(), diff*100.f);
         ofSetColor(255, 20);
         ofFill();
-        ofDrawCircle(animator.point.getCurrentPosition(), 18);
+        ofDrawCircle(animator.point.getCurrentPosition(), diff*95.f);
         ofPopStyle();
     }
     
@@ -334,7 +339,7 @@ void ofApp::setupGui(){
     gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
     
     gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
-    gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, 0.01f, 0.40f));
+    gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, DIFFUSION_MIN, DIFFUSION_MAX));
     
     gui.add(pointRadiusX.setup("Radius X", 600, ofGetWidth()*0.08f, ofGetWidth()*0.8f));
     gui.add(pointRadiusY.setup("Radius Y", 600, ofGetHeight()*0.08f, ofGetHeight()*0.8f));
