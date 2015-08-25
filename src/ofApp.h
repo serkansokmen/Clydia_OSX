@@ -8,7 +8,7 @@
 #include "ofxAnimatableOfPoint.h"
 
 class ofApp : public ofBaseApp{
-    
+
 private:
     void toggleCamera(bool& isOpen);
     void toggleColorMode(bool& isHsv);
@@ -38,14 +38,15 @@ private:
     ofxFloatSlider  camY;
     
     ofxFloatSlider  pointSpeed;
+    ofxFloatSlider  branchDiffusion;
     ofxFloatSlider  pointRadiusX;
     ofxFloatSlider  pointRadiusY;
     
     ofxToggle       bUseHSV;
     ofxToggle       bDrawDebug;
     ofxToggle       bDrawVideo;
-    ofxToggle       bClearOnDraw;
     ofxToggle       bUseDiff;
+    ofxToggle       bBlackAndWhite;
     ofxButton       clearBtn;
     ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
