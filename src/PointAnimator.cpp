@@ -12,8 +12,7 @@
 void PointAnimator::setup(const ofPoint& center){
     
     this->speed = 0;
-    this->radiusX = 0;
-    this->radiusY = 0;
+    this->radius.set(0, 0);
     this->angle = 0;
     this->center = center;
     
@@ -23,17 +22,19 @@ void PointAnimator::setup(const ofPoint& center){
     this->point.setCurve(EASE_IN_EASE_OUT);
 }
 
-void PointAnimator::update(float dt){
+void PointAnimator::update(float dt, float diff){
     
     point.update(dt);
+    float radiusX = radius.x;
+    float radiusY = radius.x;
     
     if (!point.isOrWillBeAnimating()) {
         angle = ofGetElapsedTimef() * speed;
         if (radiusX > radiusX/2) {
-            radiusX -= radiusX*0.00008f;
+            radiusX -= radiusX*diff;
         }
         if (radiusY > radiusY/2) {
-            radiusY -= radiusY*0.00008f;
+            radiusY -= radiusY*diff;
         }
         
         x = radiusX * cos(angle*4) + center.x;

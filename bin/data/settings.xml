@@ -1,8 +1,8 @@
 <group>
 	<Drawing/>
 	<Invert>1</Invert>
-	<Branch_Color>135, 132, 136, 255</Branch_Color>
-	<Speed>0.0334</Speed>
+	<Branch_Color>85, 89, 255, 255</Branch_Color>
+	<Speed>0.35515</Speed>
 	<Branch_Diffusion>0.0412</Branch_Diffusion>
 	<Radius_X>286.272</Radius_X>
 	<Radius_Y>256.68</Radius_Y>
@@ -18,7 +18,9 @@
 	<Use_HSV>1</Use_HSV>
 	<Video_view_position>1120, 660, 0</Video_view_position>
 	<Draw_Debug>1</Draw_Debug>
-	<Draw_Video>1</Draw_Video>
+	<Draw_Video>0</Draw_Video>
 	<Use_Difference>0</Use_Difference>
 <Video_Grabber>1120, 660, 0</Video_Grabber>
+<Draw_Radius>481.429, 481.429</Draw_Radius>
+<Difference_on_loop>0.749995</Difference_on_loop>
 </group>
