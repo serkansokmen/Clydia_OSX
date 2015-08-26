@@ -84,7 +84,6 @@ void Branch::draw()
         case CL_BRANCH_DRAW_LEAVES:
         {
             ofFill();
-            
             ofSetPolyMode(OF_POLY_WINDING_NONZERO);
             ofBeginShape();
             for (auto p : positions) {

@@ -31,6 +31,7 @@ void ofApp::setup(){
     contourFinder.getTracker().setMaximumDistance(32);
     
     setupGui();
+    bDrawGui = true;
     
     // Setup animator point
     animator.setup(ofGetWindowRect().getCenter(), ofColor::black);
@@ -190,7 +191,7 @@ void ofApp::clearCanvas(){
 
 //--------------------------------------------------------------
 void ofApp::saveCanvas(){
-    string filename = "clydia_" + ofToString(ofGetUnixTime()) + ".png";
+    string filename = "Frames/clydia_" + ofToString(ofGetUnixTime()) + ".png";
     
     ofImage img;
     ofPixels pixels;
