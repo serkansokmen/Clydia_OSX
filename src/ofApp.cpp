@@ -33,8 +33,9 @@ void ofApp::setup(){
     setupGui();
     bDrawGui = true;
     
-    // Setup animator point
-    animator.setup(ofGetWindowRect().getCenter(), ofColor::black);
+    // Setup pointAnimator point
+    pointAnimator.setup(ofGetWindowRect().getCenter());
+    colorAnimator.setup(ofColor::black);
     
     ofFbo::Settings settings;
     settings.numSamples = 4; // also try 8, if your GPU supports it
@@ -53,18 +54,21 @@ void ofApp::update(){
     float dt = 1.0f / 60.0f;
     
     if (bUseAnimator) {
-        animator.speed = pointSpeed;
-        animator.radiusX = pointRadiusX;
-        animator.radiusY = pointRadiusY;
-        animator.update(dt);
-        if (animator.color.getTargetColor() != branchColor) {
+        pointAnimator.speed = pointSpeed;
+        pointAnimator.radiusX = pointRadiusX;
+        pointAnimator.radiusY = pointRadiusY;
+        pointAnimator.update(dt);
+        
+        if (colorAnimator.color.getTargetColor() != branchColor) {
             if (bBlackAndWhite) {
-                animator.colorTo(ofColor::black);
+                colorAnimator.colorTo(ofColor::black);
             } else {
-                animator.colorTo(branchColor);
+                colorAnimator.colorTo(branchColor);
             }
+            colorAnimator.update(dt);
         }
-        addBranchAt(animator.point.getCurrentPosition(), branchColor);
+        
+        addBranchAt(pointAnimator.point.getCurrentPosition(), branchColor);
     }
     
     if (bUseCamera && cam.isInitialized()) {
@@ -91,7 +95,7 @@ void ofApp::update(){
     for (int i=0; i<branches.size(); i++) {
         auto b = branches[i];
         if (b->getIsAlive()) {
-            b->update(pointSpeed*0.1f, branchDiffusion, animator.color.getCurrentColor());
+            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor());
         } else {
             delete b;
             b = 0;
@@ -134,10 +138,10 @@ void ofApp::draw(){
         ofNoFill();
         ofSetCircleResolution(100.f);
         ofSetLineWidth(diff);
-        ofDrawCircle(animator.point.getCurrentPosition(), diff*100.f);
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*100.f);
         ofSetColor(255, 20);
         ofFill();
-        ofDrawCircle(animator.point.getCurrentPosition(), diff*95.f);
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*95.f);
         ofPopStyle();
     }
     
@@ -214,14 +218,14 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
     
-    animator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     addBranchAt(ofVec2f(x, y), branchColor);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     
-    animator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
     ofRectangle rect(camX, camY, CAM_WIDTH, CAM_HEIGHT);
     if (rect.inside(x, y)) {
@@ -234,7 +238,7 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     
-    animator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
 }
 
 //--------------------------------------------------------------

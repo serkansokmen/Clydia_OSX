@@ -10,7 +10,6 @@
 
 #include "ofMain.h"
 #include "ofxAnimatableOfPoint.h"
-#include "ofxAnimatableOfColor.h"
 
 
 class PointAnimator {
@@ -19,12 +18,10 @@ class PointAnimator {
     float y;
     
 public:
-    void setup(const ofPoint& center, const ofColor& color);
+    void setup(const ofPoint& center);
     void update(float dt);
     void moveTo(const ofPoint& pos, bool immediate=true);
-    void colorTo(const ofColor& color);
     
-    ofxAnimatableOfColor    color;
     ofPoint                 center;
     ofxAnimatableOfPoint    point;
     

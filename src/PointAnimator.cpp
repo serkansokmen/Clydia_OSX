@@ -9,7 +9,7 @@
 #include "PointAnimator.h"
 
 
-void PointAnimator::setup(const ofPoint& center, const ofColor& color){
+void PointAnimator::setup(const ofPoint& center){
     
     this->speed = 0;
     this->radiusX = 0;
@@ -17,22 +17,15 @@ void PointAnimator::setup(const ofPoint& center, const ofColor& color){
     this->angle = 0;
     this->center = center;
     
-    this->color.setDuration(4);
-    this->color.setColor(color);
-    this->color.setRepeatType(PLAY_ONCE);
-    this->color.setCurve(EASE_OUT);
-    
     this->point.setPosition(center);
     this->point.setDuration(1);
     this->point.setRepeatType(PLAY_ONCE);
-//    this->point.setCurve(EASE_OUT_ELASTIC);
     this->point.setCurve(EASE_IN_EASE_OUT);
 }
 
 void PointAnimator::update(float dt){
     
     point.update(dt);
-    color.update(dt);
     
     if (!point.isOrWillBeAnimating()) {
         angle = ofGetElapsedTimef() * speed;
@@ -60,10 +53,3 @@ void PointAnimator::moveTo(const ofPoint &pos, bool immediate){
         point.animateTo(pos);
     }
 }
-
-void PointAnimator::colorTo(const ofColor &color){
-    if (!this->color.isOrWillBeAnimating()){
-        this->color.animateTo(color);
-    }
-}
-

@@ -35,6 +35,7 @@
 		20D528D61B7D4AF900E4C841 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D528C81B7D4AF900E4C841 /* Utilities.cpp */; };
 		20D528D71B7D4AF900E4C841 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D528C91B7D4AF900E4C841 /* Wrappers.cpp */; };
 		20D528D81B7D4AF900E4C841 /* opencv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20D528CA1B7D4AF900E4C841 /* opencv.a */; };
+		20EBB7051B8D4060000562BF /* ColorAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20EBB7031B8D4060000562BF /* ColorAnimator.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
@@ -130,6 +131,8 @@
 		20D528C81B7D4AF900E4C841 /* Utilities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
 		20D528C91B7D4AF900E4C841 /* Wrappers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Wrappers.cpp; sourceTree = "<group>"; };
 		20D528CA1B7D4AF900E4C841 /* opencv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = opencv.a; path = ../../../addons/ofxCv/../ofxOpenCv/libs/opencv/lib/osx/opencv.a; sourceTree = "<group>"; };
+		20EBB7031B8D4060000562BF /* ColorAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorAnimator.cpp; sourceTree = "<group>"; };
+		20EBB7041B8D4060000562BF /* ColorAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorAnimator.h; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* ClydiaDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClydiaDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -370,6 +373,8 @@
 				20D5289F1B7D4A9800E4C841 /* Branch.h */,
 				208425221B825B2D0058C621 /* PointAnimator.cpp */,
 				208425231B825B2D0058C621 /* PointAnimator.h */,
+				20EBB7031B8D4060000562BF /* ColorAnimator.cpp */,
+				20EBB7041B8D4060000562BF /* ColorAnimator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -496,6 +501,7 @@
 				20D528CE1B7D4AF900E4C841 /* ContourFinder.cpp in Sources */,
 				20D528971B7D4A3D00E4C841 /* ofxButton.cpp in Sources */,
 				20D5289B1B7D4A3D00E4C841 /* ofxSlider.cpp in Sources */,
+				20EBB7051B8D4060000562BF /* ColorAnimator.cpp in Sources */,
 				20D5289D1B7D4A3D00E4C841 /* ofxToggle.cpp in Sources */,
 				20D5289C1B7D4A3D00E4C841 /* ofxSliderGroup.cpp in Sources */,
 				20D528981B7D4A3D00E4C841 /* ofxGuiGroup.cpp in Sources */,

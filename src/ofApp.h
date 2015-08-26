@@ -5,7 +5,8 @@
 #include "ofxGui.h"
 #include "Branch.h"
 #include "PointAnimator.h"
-#include "ofxAnimatableOfPoint.h"
+#include "ColorAnimator.h"
+
 
 class ofApp : public ofBaseApp{
 
@@ -56,7 +57,9 @@ private:
     
     bool bDrawGui;
     
-    PointAnimator   animator;
+    PointAnimator   pointAnimator;
+    ColorAnimator   colorAnimator;
+    
     // Branches
     vector<Branch*>	branches;
     
