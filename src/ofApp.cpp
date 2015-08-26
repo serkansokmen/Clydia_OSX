@@ -55,9 +55,8 @@ void ofApp::update(){
     
     if (bUseAnimator) {
         pointAnimator.speed = pointSpeed;
-        pointAnimator.radiusX = pointRadiusX;
-        pointAnimator.radiusY = pointRadiusY;
-        pointAnimator.update(dt);
+        pointAnimator.radius.set(pointRadius);
+        pointAnimator.update(dt, pointDiff);
         
         if (colorAnimator.color.getTargetColor() != branchColor) {
             if (bUseFlatColors) {
@@ -134,13 +133,14 @@ void ofApp::draw(){
     float diff = ofNormalize(branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
     
     if (bUseAnimator) {
+        ofColor aColor(bgColor);
         ofPushStyle();
-        ofSetColor(255);
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b);
         ofNoFill();
         ofSetCircleResolution(100.f);
         ofSetLineWidth(diff);
         ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*100.f);
-        ofSetColor(255, 20);
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b, 20);
         ofFill();
         ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*95.f);
         ofPopStyle();
@@ -343,9 +343,9 @@ void ofApp::setupGui(){
     
     gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
     gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, DIFFUSION_MIN, DIFFUSION_MAX));
+    gui.add(pointDiff.setup("Difference on loop", 0.24f, 0.00001f, 0.99999f));
     
-    gui.add(pointRadiusX.setup("Radius X", 600, ofGetWidth()*0.08f, ofGetWidth()*0.8f));
-    gui.add(pointRadiusY.setup("Radius Y", 600, ofGetHeight()*0.08f, ofGetHeight()*0.8f));
+    gui.add(pointRadius.setup("Draw Radius", ofVec2f(200, 200), ofVec2f(10, 10), ofVec2f(ofGetHeight()-120.f, ofGetHeight()-120.f)));
     gui.add(bUseAnimator.setup("Use Animator", false));
     
     gui.add(trackingLabel.setup("Color Tracking", ""));

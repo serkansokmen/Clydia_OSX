@@ -40,8 +40,8 @@ private:
     
     ofxFloatSlider  pointSpeed;
     ofxFloatSlider  branchDiffusion;
-    ofxFloatSlider  pointRadiusX;
-    ofxFloatSlider  pointRadiusY;
+    ofxVec2Slider   pointRadius;
+    ofxFloatSlider  pointDiff;
     
     ofxToggle       bUseHSV;
     ofxToggle       bDrawVideo;

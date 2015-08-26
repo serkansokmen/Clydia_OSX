@@ -19,16 +19,15 @@ class PointAnimator {
     
 public:
     void setup(const ofPoint& center);
-    void update(float dt);
+    void update(float dt, float diff);
     void moveTo(const ofPoint& pos, bool immediate=true);
     
     ofPoint                 center;
+    ofVec2f                 radius;
     ofxAnimatableOfPoint    point;
     
     float       speed;
     float       angle;
-    float       radiusX;
-    float       radiusY;
 };
 
 
