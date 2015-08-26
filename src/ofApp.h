@@ -4,52 +4,63 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "Branch.h"
-#include "ofxAnimatableOfPoint.h"
+#include "PointAnimator.h"
+#include "ColorAnimator.h"
 
 
 class ofApp : public ofBaseApp{
-    
+
 private:
-    void toggleCamera(bool & isOpen);
+    void toggleCamera(bool& isOpen);
+    void toggleColorMode(bool& isHsv);
     void clearCanvas();
     void saveCanvas();
-    void thresholdChanged(int & threshold);
-    void addBranchAt(const ofVec2f &pos);
+    void thresholdChanged(int& threshold);
+    void addBranchAt(const ofVec2f& pos, const ofColor& color);
+    void setupGui();
+    
+    void addBranchesFromImage(const ofImage& image, const ofVec2f& pos);
     
     ofVideoGrabber cam;
     
     ofxCv::ContourFinder contourFinder;
     ofxCv::TrackingColorMode trackingColorMode;
     
-    ofxColorSlider  targetColor;
-    ofxFloatSlider  threshold;
-    ofxFloatSlider  camX;
-    ofxFloatSlider  camY;
-    ofxFloatSlider  pointSpeed;
-    ofxToggle       bDrawDebug;
-    ofxToggle       bDrawVideo;
     ofxToggle       bUseCamera;
-    ofxToggle       bClearOnDraw;
+    
+    ofxLabel        drawingLabel;
+    ofxLabel        trackingLabel;
+    ofxLabel        generalLabel;
+    
+    ofxColorSlider  branchColor;
+    ofxColorSlider  targetColor;
+    ofxColorSlider  bgColor;
+    ofxFloatSlider  threshold;
+    ofxPointSlider  camPosition;
+    
+    ofxFloatSlider  pointSpeed;
+    ofxFloatSlider  branchDiffusion;
+    ofxVec2Slider   pointRadius;
+    ofxFloatSlider  pointDiff;
+    
+    ofxToggle       bUseHSV;
+    ofxToggle       bDrawVideo;
     ofxToggle       bUseDiff;
+    ofxToggle       bUseFlatColors;
     ofxButton       clearBtn;
+    ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
     ofxPanel        gui;
     
     ofFbo           fbo;
-    ofVec2f         *touchPos;
     
-    ofxAnimatableOfPoint    pointAnim;
-    float                   radiusX;
-    float                   radiusY;
-    float                   angle;
-    
-    
-    // Clydias
-    vector<Branch*>	branches;
-    
-    bool bClearCanvas;
-    bool bSaveCanvas;
     bool bDrawGui;
+    
+    PointAnimator   pointAnimator;
+    ColorAnimator   colorAnimator;
+    
+    // Branches
+    vector<Branch*>	branches;
     
     
 public:

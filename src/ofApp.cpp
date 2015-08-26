@@ -1,8 +1,12 @@
 #include "ofApp.h"
 
-#define CAM_WIDTH       320
-#define CAM_HEIGHT      240
-#define MAX_BRANCHES    400
+#define CAM_WIDTH           320
+#define CAM_HEIGHT          240
+#define MAX_BRANCHES        3200
+#define IMAGE_DRAW_RES_X    50
+#define IMAGE_DRAW_RES_Y    50
+#define DIFFUSION_MIN       0.01f
+#define DIFFUSION_MAX       0.40f
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -13,20 +17,8 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofEnableAlphaBlending();
     ofEnableSmoothing();
+    ofEnableAntiAliasing();
     ofSetFrameRate(60);
-    
-    radiusX = 620;
-    radiusY = 620;
-    angle = 0;
-    float x = radiusX * cos(angle*4) + ofGetWidth()*0.5f;
-    float y = radiusY * sin(angle*4) + ofGetHeight()*0.5f;
-
-    pointAnim.setPosition( ofVec2f(x, y) );
-    pointAnim.setDuration(2);
-    pointAnim.setRepeatType(PLAY_ONCE);
-    pointAnim.setCurve(EASE_OUT_ELASTIC);
-//    pointAnim.setRepeatTimes(3);
-    //pointAnim.setAutoFlipCurve(true);
     
     //------------------------------------------------
     // Contour finder
@@ -38,41 +30,19 @@ void ofApp::setup(){
     // an object can move up to 32 pixels per frame
     contourFinder.getTracker().setMaximumDistance(32);
     
-    trackingColorMode = ofxCv::TRACK_COLOR_RGB;
+    setupGui();
+    bDrawGui = true;
     
-    //------------------------------------------------
-    // GUI
-    //------------------------------------------------
-    gui.setup();
-    gui.setDefaultTextPadding(20);
+    // Setup pointAnimator point
+    pointAnimator.setup(ofGetWindowRect().getCenter());
+    colorAnimator.setup(ofColor::black);
     
-    gui.add(targetColor.setup("Color to Track", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-    gui.add(threshold.setup("Threshold", 15, 10, 50));
-    gui.add(camX.setup("Camera X", 0, 0, ofGetWidth()-CAM_WIDTH));
-    gui.add(camY.setup("Camera Y", 0, 0, ofGetHeight()-CAM_HEIGHT));
-    gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
-    gui.add(bDrawDebug.setup("Draw Debug", true));
-    gui.add(bDrawVideo.setup("Draw Video", true));
-    gui.add(bClearOnDraw.setup("Clear on Draw", true));
-    gui.add(bUseDiff.setup("Use Difference", true));
-    gui.add(bUseCamera.setup("Track with Camera", false));
-    gui.add(clearBtn.setup("Clear"));
-    gui.add(saveBtn.setup("Save Image"));
-    
-    clearBtn.addListener(this, &ofApp::clearCanvas);
-    saveBtn.addListener(this, &ofApp::saveCanvas);
-    bUseCamera.addListener(this, &ofApp::toggleCamera);
-    
-    gui.loadFromFile("settings.xml");
-    
-#ifdef TARGET_OPENGLES
-    // with alpha, 32 bits red, 32 bits green, 32 bits blue, 32 bits alpha, from 0 to 1 in 'infinite' steps
-    fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-    ofLogWarning("ofApp") << "GL_RGBA32F_ARB is not available for OPENGLES.  Using RGBA.";
-#else
-    // with alpha, 32 bits red, 32 bits green, 32 bits blue, 32 bits alpha, from 0 to 1 in 'infinite' steps
-    fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F_ARB);
-#endif
+    ofFbo::Settings settings;
+    settings.numSamples = 4; // also try 8, if your GPU supports it
+    settings.useDepth = true;
+    settings.width = ofGetWidth();
+    settings.height = ofGetHeight();
+    fbo.allocate(settings);
     
     clearCanvas();
 }
@@ -80,41 +50,27 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofSetBackgroundAuto(bClearOnDraw);
-    
     //app timebase, to send to all animatable objects
     float dt = 1.0f / 60.0f;
     
-    pointAnim.update( dt );
-    
-    angle = ofGetElapsedTimef() * pointSpeed;
-    
-    if (radiusX > radiusX/2) {
-        radiusX -= radiusX*0.00008f;
-    }
-    if (radiusY > radiusY/2) {
-        radiusY -= radiusY*0.00008f;
-    }
-    float x = radiusX * cos(angle*4) + ofGetWidth()*0.5f;
-    float y = radiusY * sin(angle*4) + ofGetHeight()*0.5f;
-    
-    if ( !pointAnim.isOrWillBeAnimating() ){
-        if (touchPos) {
-            pointAnim.animateTo( *touchPos );
-        } else {
-            pointAnim.animateTo( ofPoint(x, y) );
+    if (bUseAnimator) {
+        pointAnimator.speed = pointSpeed;
+        pointAnimator.radius.set(pointRadius);
+        pointAnimator.update(dt, pointDiff);
+        
+        if (colorAnimator.color.getTargetColor() != branchColor) {
+            if (bUseFlatColors) {
+                colorAnimator.colorTo(ofColor::black);
+            } else {
+                colorAnimator.colorTo(branchColor);
+            }
+            colorAnimator.update(dt);
         }
         
+        addBranchAt(pointAnimator.point.getCurrentPosition(), branchColor);
     }
     
-    addBranchAt(pointAnim.getCurrentPosition());
-    
-    if (bClearCanvas) {
-        clearCanvas();
-        bClearCanvas = false;
-    }
-    
-    if (bUseCamera) {
+    if (bUseCamera && cam.isInitialized()) {
         cam.update();
         if (cam.isFrameNew()) {
             ofxCv::blur(cam, 25);
@@ -130,62 +86,70 @@ void ofApp::update(){
             tPos->x = ofMap(centroid.x, 0, cam.getWidth(), 0, ofGetWidth());
             tPos->y = ofMap(centroid.y, 0, cam.getHeight(), 0, ofGetHeight());
             
-            addBranchAt(*tPos);
+            addBranchAt(*tPos, branchColor);
         }
     }
     
-    // update clydias
-    if (branches.size() < MAX_BRANCHES) {
-        for (int i=0; i<branches.size(); i++) {
-            auto b = branches[i];
-            if (b->getIsAlive()) {
-                b->update(pointSpeed*0.1f);
-            } else {
-                delete b;
-                b = 0;
-                branches.erase(branches.begin()+i);
-            }
-        }
+    // Update branches
+    clDrawAlphaMode mode;
+    if (bUseFlatColors) {
+        mode = CL_BRANCH_DRAW_FLAT;
     } else {
-        branches.erase(branches.begin());
+        mode = CL_BRANCH_DRAW_GRADIENT;
+    }
+    for (int i=0; i<branches.size(); i++) {
+        auto b = branches[i];
+        if (b->getIsAlive()) {
+            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(), mode);
+        } else {
+            delete b;
+            b = 0;
+            branches.erase(branches.begin()+i);
+        }
     }
     
     // Draw to fbo
     fbo.begin();
+//    ofEnableDepthTest();
+    ofPushMatrix();
     for (auto b : branches) {
         ofSetColor(255);
         ofSetLineWidth(0.1f);
         b->draw();
     }
+    ofPopMatrix();
+//    ofDisableDepthTest();
     fbo.end();
-    
-    ofLog() << branches.size() << endl;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-
-    ofBackgroundGradient(ofColor::black, ofColor::black, OF_GRADIENT_CIRCULAR);
+//    ofBackgroundGradient(ofColor(33,33,33), ofColor::black, OF_GRADIENT_CIRCULAR);
+    ofBackground(bgColor);
     
-    fbo.draw(0, 0);
-//    shader.setUniformTexture("fboTexture", fbo.getTextureReference(0), 0);
+    fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
     
-    ofPushStyle();
-    ofSetColor(255);
-    ofNoFill();
-    ofSetLineWidth(2.0f);
-    ofDrawCircle(pointAnim.getCurrentPosition(), 20);
-    ofSetColor(255, 20);
-    ofFill();
-    ofDrawCircle(pointAnim.getCurrentPosition(), 18);
-    ofPopStyle();
+    float diff = ofNormalize(branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
     
-    ofxCv::RectTracker& tracker = contourFinder.getTracker();
+    if (bUseAnimator) {
+        ofColor aColor(bgColor);
+        ofPushStyle();
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b);
+        ofNoFill();
+        ofSetCircleResolution(100.f);
+        ofSetLineWidth(diff);
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*100.f);
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b, 20);
+        ofFill();
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*95.f);
+        ofPopStyle();
+    }
     
     if (bDrawVideo && bUseCamera) {
+        ofxCv::RectTracker& tracker = contourFinder.getTracker();
         ofSetColor(255);
-        cam.draw(camX, camY, cam.getWidth(), cam.getHeight());
+        cam.draw(camPosition, cam.getWidth(), cam.getHeight());
     }
     
     if (bDrawGui){
@@ -198,22 +162,8 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key){
-        case 'h':
-            trackingColorMode = ofxCv::TRACK_COLOR_HSV;
-            contourFinder.setTargetColor(targetColor, trackingColorMode);
-            break;
-        case 'r':
-            trackingColorMode = ofxCv::TRACK_COLOR_RGB;
-            contourFinder.setTargetColor(targetColor, trackingColorMode);
-            break;
         case ' ':
             bDrawGui = !bDrawGui;
-            break;
-        case 'd':
-            bDrawDebug = !bDrawDebug;
-            break;
-        case 'v':
-            bDrawVideo = !bDrawVideo;
             break;
         case 's':
             gui.saveToFile("settings.xml");
@@ -234,14 +184,15 @@ void ofApp::clearCanvas(){
     }
     branches.clear();
     
+    ofColor c(bgColor);
     fbo.begin();
-    ofClear(255, 255, 255, 0);
+    ofClear(c.r, c.g, c.b, 0);
     fbo.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::saveCanvas(){
-    string filename = "clydia_" + ofToString(ofGetElapsedTimeMillis()) + ".png";
+    string filename = "Frames/clydia_" + ofToString(ofGetUnixTime()) + ".png";
     
     ofImage img;
     ofPixels pixels;
@@ -263,30 +214,28 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    addBranchAt(ofVec2f(x, y));
     
-    touchPos->set(x, y);
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+    addBranchAt(ofVec2f(x, y), branchColor);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     
-    if (!touchPos) {
-        touchPos = new ofVec2f(x, y);
-    }
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
-    ofRectangle rect(camX, camY, CAM_WIDTH, CAM_HEIGHT);
+    ofRectangle rect(camPosition, CAM_WIDTH, CAM_HEIGHT);
     if (rect.inside(x, y)) {
         auto pixels = cam.getPixels();
-        targetColor = pixels.getColor(x - camX, y - camY);
+        targetColor = pixels.getColor(x - camPosition->x, y - camPosition->y);
         contourFinder.setTargetColor(targetColor, trackingColorMode);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    delete touchPos;
-    touchPos = 0;
+    
+    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
 }
 
 //--------------------------------------------------------------
@@ -310,22 +259,50 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::dragEvent(ofDragInfo dragInfo){
+    
+    clearCanvas();
+    
+    ofPoint pos(ofGetWindowRect().getCenter());
+    
+    if( dragInfo.files.size() > 0 ){
+        for(unsigned int k = 0; k < dragInfo.files.size(); k++){
+            ofImage img;
+            if (img.load(dragInfo.files[k])) {
+                pos.x -= img.getWidth()/2;
+                pos.y -= img.getHeight()/2;
+                addBranchesFromImage(img, pos);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::exit(){
-    clearBtn.removeListener(this, &ofApp::clearCanvas);
-    saveBtn.removeListener(this, &ofApp::saveCanvas);
-    bUseCamera.removeListener(this, &ofApp::toggleCamera);
+void ofApp::addBranchesFromImage(const ofImage& image, const ofVec2f& pos) {
+    
+    ofLog() << "Adding images" << endl;
+    ofLog() << "width: " << image.getWidth() << endl;
+    ofLog() << "height: " << image.getHeight() << endl;
+    
+    for (int i = 0; i < image.getWidth(); i += IMAGE_DRAW_RES_X){
+        for (int j = 0; j < image.getHeight(); j += IMAGE_DRAW_RES_Y){
+            auto c = image.getColor(i, j);
+            if (c.getBrightness() > 5.f) {
+                addBranchAt(pos + ofVec2f(i, j), image.getColor(i, j));
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::addBranchAt(const ofVec2f &pos)
+void ofApp::addBranchAt(const ofVec2f &pos, const ofColor& color)
 {
+    if (branches.size() > MAX_BRANCHES) {
+        ofLog() << "Max branch count reached." << endl;
+//        return;
+    }
     Branch *branch = new Branch;
-    branch->setup(pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
+    branch->setup(color, pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
     branch->setDrawMode(CL_BRANCH_DRAW_LEAVES);
     branches.push_back(branch);
 }
@@ -342,4 +319,65 @@ void ofApp::toggleCamera(bool & isOpen){
     }
 }
 
+//--------------------------------------------------------------
+void ofApp::toggleColorMode(bool & isHsv){
+    if (isHsv) {
+        trackingColorMode = ofxCv::TRACK_COLOR_HSV;
+        contourFinder.setTargetColor(targetColor, trackingColorMode);
+    } else {
+        trackingColorMode = ofxCv::TRACK_COLOR_RGB;
+        contourFinder.setTargetColor(targetColor, trackingColorMode);
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::setupGui(){
+    
+    gui.setup();
+    gui.setDefaultTextPadding(20);
+    
+    gui.add(drawingLabel.setup("Drawing", ""));
+    gui.add(bUseFlatColors.setup("Use flat colors", false));
+    gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+    gui.add(bgColor.setup("Background Color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
+    
+    gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
+    gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, DIFFUSION_MIN, DIFFUSION_MAX));
+    gui.add(pointDiff.setup("Difference on loop", 0.24f, 0.00001f, 0.99999f));
+    
+    gui.add(pointRadius.setup("Draw Radius", ofVec2f(200, 200), ofVec2f(10, 10), ofVec2f(ofGetHeight()-120.f, ofGetHeight()-120.f)));
+    gui.add(bUseAnimator.setup("Use Animator", false));
+    
+    gui.add(trackingLabel.setup("Color Tracking", ""));
+    gui.add(bUseCamera.setup("Track with Camera", false));
+    gui.add(targetColor.setup("Color to Track", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+    gui.add(threshold.setup("Threshold", 15, 10, 50));
+    gui.add(bUseHSV.setup("Use HSV", true));
+    gui.add(camPosition.setup("Video Grabber",
+                              ofGetWindowRect().getTopLeft(),
+                              ofGetWindowRect().getTopLeft(),
+                              ofPoint(ofGetWindowRect().getBottomRight().x - CAM_WIDTH,
+                                      ofGetWindowRect().getBottomRight().y - CAM_HEIGHT)));
+    gui.add(bDrawVideo.setup("Draw Video", true));
+    gui.add(bUseDiff.setup("Use Difference", true));
+    
+    gui.add(generalLabel.setup("General", ""));
+    gui.add(clearBtn.setup("Clear"));
+    gui.add(saveBtn.setup("Save Image"));
+    
+    clearBtn.addListener(this, &ofApp::clearCanvas);
+    saveBtn.addListener(this, &ofApp::saveCanvas);
+    bUseHSV.addListener(this, &ofApp::toggleColorMode);
+    bUseCamera.addListener(this, &ofApp::toggleCamera);
+    
+    gui.loadFromFile("settings.xml");
+}
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+    clearBtn.removeListener(this, &ofApp::clearCanvas);
+    saveBtn.removeListener(this, &ofApp::saveCanvas);
+    bUseHSV.removeListener(this, &ofApp::toggleColorMode);
+    bUseCamera.removeListener(this, &ofApp::toggleCamera);
+}
 
