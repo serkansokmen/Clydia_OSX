@@ -27,16 +27,22 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 	
 	border.set(b);
     
-    alpha = ofNormalize(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX) * color.a;
     this->color.set(color);
-    this->color.a = alpha;
 }
 
 
-void Branch::update(const float& speed, const float& diffusion, const ofColor& color)
+void Branch::update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode)
 {
-    alpha = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0);
-    this->color.a = alpha;
+    switch (alphaMode) {
+        case CL_BRANCH_DRAW_FLAT:
+            break;
+        case CL_BRANCH_DRAW_GRADIENT:
+            alpha = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0);
+            this->color.a = alpha;
+            break;
+        default:
+            break;
+    }
 
 	switch (lifeState)
     {

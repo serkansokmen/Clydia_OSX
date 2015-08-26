@@ -20,6 +20,12 @@ enum clBranchDrawMode
     CL_BRANCH_DRAW_CIRCLES
 };
 
+enum clDrawAlphaMode
+{
+    CL_BRANCH_DRAW_FLAT,
+    CL_BRANCH_DRAW_GRADIENT
+};
+
 class Branch
 {
 private:
@@ -43,7 +49,7 @@ public:
     ~Branch();
     
 	void setup(const ofColor& color, const ofPoint& pos, const ofRectangle& b);
-	void update(const float& speed, const float& diffusion, const ofColor& color);
+	void update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode);
 	void draw();
     
     inline ofPoint getPosition() const {

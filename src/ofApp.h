@@ -34,6 +34,7 @@ private:
     
     ofxColorSlider  branchColor;
     ofxColorSlider  targetColor;
+    ofxColorSlider  bgColor;
     ofxFloatSlider  threshold;
     ofxFloatSlider  camX;
     ofxFloatSlider  camY;
@@ -47,7 +48,7 @@ private:
     ofxToggle       bDrawDebug;
     ofxToggle       bDrawVideo;
     ofxToggle       bUseDiff;
-    ofxToggle       bBlackAndWhite;
+    ofxToggle       bUseFlatColors;
     ofxButton       clearBtn;
     ofxToggle       bUseAnimator;
     ofxButton       saveBtn;

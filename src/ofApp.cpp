@@ -60,7 +60,7 @@ void ofApp::update(){
         pointAnimator.update(dt);
         
         if (colorAnimator.color.getTargetColor() != branchColor) {
-            if (bBlackAndWhite) {
+            if (bUseFlatColors) {
                 colorAnimator.colorTo(ofColor::black);
             } else {
                 colorAnimator.colorTo(branchColor);
@@ -92,10 +92,16 @@ void ofApp::update(){
     }
     
     // Update branches
+    clDrawAlphaMode mode;
+    if (bUseFlatColors) {
+        mode = CL_BRANCH_DRAW_FLAT;
+    } else {
+        mode = CL_BRANCH_DRAW_GRADIENT;
+    }
     for (int i=0; i<branches.size(); i++) {
         auto b = branches[i];
         if (b->getIsAlive()) {
-            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor());
+            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(), mode);
         } else {
             delete b;
             b = 0;
@@ -122,11 +128,7 @@ void ofApp::draw(){
     
 
 //    ofBackgroundGradient(ofColor(33,33,33), ofColor::black, OF_GRADIENT_CIRCULAR);
-    if (bBlackAndWhite) {
-        ofBackground(255.f);
-    } else {
-        ofBackground(0.f);
-    }
+    ofBackground(bgColor);
     
     fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
     
@@ -183,13 +185,9 @@ void ofApp::clearCanvas(){
     }
     branches.clear();
     
+    ofColor c(bgColor);
     fbo.begin();
-    if (bBlackAndWhite) {
-        ofClear(255, 255, 255, 0);
-    } else {
-        ofClear(0, 0, 0, 0);
-    }
-    
+    ofClear(c.r, c.g, c.b, 0);
     fbo.end();
 }
 
@@ -340,8 +338,9 @@ void ofApp::setupGui(){
     gui.setDefaultTextPadding(20);
     
     gui.add(drawingLabel.setup("Drawing", ""));
-    gui.add(bBlackAndWhite.setup("Invert", false));
+    gui.add(bUseFlatColors.setup("Use flat colors", false));
     gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+    gui.add(bgColor.setup("Background Color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
     
     gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
     gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, DIFFUSION_MIN, DIFFUSION_MAX));

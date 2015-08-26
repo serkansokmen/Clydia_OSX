@@ -1,6 +1,6 @@
 <group>
 	<Drawing/>
-	<Invert>0</Invert>
+	<Invert>1</Invert>
 	<Branch_Color>255, 0, 0, 255</Branch_Color>
 	<Speed>0.0334</Speed>
 	<Branch_Diffusion>0.0919</Branch_Diffusion>
