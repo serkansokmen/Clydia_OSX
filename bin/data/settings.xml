@@ -1,12 +1,24 @@
 <group>
 	<Drawing/>
 	<Invert>1</Invert>
-	<Branch_Color>255, 0, 0, 255</Branch_Color>
+	<Branch_Color>0, 0, 0, 255</Branch_Color>
 	<Speed>0.0334</Speed>
 	<Branch_Diffusion>0.0919</Branch_Diffusion>
 	<Radius_X>286.272</Radius_X>
 	<Radius_Y>256.68</Radius_Y>
-	<Use_Animator>1</Use_Animator>
+	<Use_Animator>0</Use_Animator>
 	<General/>
 <group/>
+<Use_flat_colors>1</Use_flat_colors>
+	<Background_Color>255, 255, 255, 255</Background_Color>
+	<Color_Tracking/>
+	<Track_with_Camera>1</Track_with_Camera>
+	<Color_to_Track>90, 24, 18, 255</Color_to_Track>
+	<Threshold>15</Threshold>
+	<Use_HSV>1</Use_HSV>
+	<Video_view_position>1120, 660, 0</Video_view_position>
+	<Draw_Debug>1</Draw_Debug>
+	<Draw_Video>1</Draw_Video>
+	<Use_Difference>0</Use_Difference>
+<Video_Grabber>1120, 660, 0</Video_Grabber>
 </group>

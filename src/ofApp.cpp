@@ -126,7 +126,6 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-
 //    ofBackgroundGradient(ofColor(33,33,33), ofColor::black, OF_GRADIENT_CIRCULAR);
     ofBackground(bgColor);
     
@@ -150,7 +149,7 @@ void ofApp::draw(){
     if (bDrawVideo && bUseCamera) {
         ofxCv::RectTracker& tracker = contourFinder.getTracker();
         ofSetColor(255);
-        cam.draw(camX, camY, cam.getWidth(), cam.getHeight());
+        cam.draw(camPosition, cam.getWidth(), cam.getHeight());
     }
     
     if (bDrawGui){
@@ -225,10 +224,10 @@ void ofApp::mousePressed(int x, int y, int button){
     
     pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
-    ofRectangle rect(camX, camY, CAM_WIDTH, CAM_HEIGHT);
+    ofRectangle rect(camPosition, CAM_WIDTH, CAM_HEIGHT);
     if (rect.inside(x, y)) {
         auto pixels = cam.getPixels();
-        targetColor = pixels.getColor(x - camX, y - camY);
+        targetColor = pixels.getColor(x - camPosition->x, y - camPosition->y);
         contourFinder.setTargetColor(targetColor, trackingColorMode);
     }
 }
@@ -349,16 +348,18 @@ void ofApp::setupGui(){
     gui.add(pointRadiusY.setup("Radius Y", 600, ofGetHeight()*0.08f, ofGetHeight()*0.8f));
     gui.add(bUseAnimator.setup("Use Animator", false));
     
-//    gui.add(trackingLabel.setup("Tracking", ""));
-//    gui.add(bUseCamera.setup("Track with Camera", false));
-//    gui.add(targetColor.setup("Color to Track", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-//    gui.add(threshold.setup("Threshold", 15, 10, 50));
-//    gui.add(bUseHSV.setup("Use HSV", true));
-//    gui.add(camX.setup("Camera X", 0, 0, ofGetWidth()-CAM_WIDTH));
-//    gui.add(camY.setup("Camera Y", 0, 0, ofGetHeight()-CAM_HEIGHT));
-//    gui.add(bDrawDebug.setup("Draw Debug", true));
-//    gui.add(bDrawVideo.setup("Draw Video", true));
-//    gui.add(bUseDiff.setup("Use Difference", true));
+    gui.add(trackingLabel.setup("Color Tracking", ""));
+    gui.add(bUseCamera.setup("Track with Camera", false));
+    gui.add(targetColor.setup("Color to Track", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+    gui.add(threshold.setup("Threshold", 15, 10, 50));
+    gui.add(bUseHSV.setup("Use HSV", true));
+    gui.add(camPosition.setup("Video Grabber",
+                              ofGetWindowRect().getTopLeft(),
+                              ofGetWindowRect().getTopLeft(),
+                              ofPoint(ofGetWindowRect().getBottomRight().x - CAM_WIDTH,
+                                      ofGetWindowRect().getBottomRight().y - CAM_HEIGHT)));
+    gui.add(bDrawVideo.setup("Draw Video", true));
+    gui.add(bUseDiff.setup("Use Difference", true));
     
     gui.add(generalLabel.setup("General", ""));
     gui.add(clearBtn.setup("Clear"));

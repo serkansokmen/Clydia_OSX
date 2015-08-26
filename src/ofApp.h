@@ -36,8 +36,7 @@ private:
     ofxColorSlider  targetColor;
     ofxColorSlider  bgColor;
     ofxFloatSlider  threshold;
-    ofxFloatSlider  camX;
-    ofxFloatSlider  camY;
+    ofxPointSlider  camPosition;
     
     ofxFloatSlider  pointSpeed;
     ofxFloatSlider  branchDiffusion;
@@ -45,7 +44,6 @@ private:
     ofxFloatSlider  pointRadiusY;
     
     ofxToggle       bUseHSV;
-    ofxToggle       bDrawDebug;
     ofxToggle       bDrawVideo;
     ofxToggle       bUseDiff;
     ofxToggle       bUseFlatColors;
