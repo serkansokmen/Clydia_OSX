@@ -134,13 +134,14 @@ void ofApp::draw(){
     float diff = ofNormalize(branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
     
     if (bUseAnimator) {
+        ofColor aColor(bgColor);
         ofPushStyle();
-        ofSetColor(255);
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b);
         ofNoFill();
         ofSetCircleResolution(100.f);
         ofSetLineWidth(diff);
         ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*100.f);
-        ofSetColor(255, 20);
+        ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b, 20);
         ofFill();
         ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*95.f);
         ofPopStyle();
