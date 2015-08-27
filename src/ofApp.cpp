@@ -149,7 +149,7 @@ void ofApp::draw(){
     if (bDrawVideo && bUseCamera) {
         ofxCv::RectTracker& tracker = contourFinder.getTracker();
         ofSetColor(255);
-        cam.draw(camPosition, cam.getWidth(), cam.getHeight());
+        cam.draw(ofVec2f(camPosition), cam.getWidth(), cam.getHeight());
     }
     
     if (bDrawGui){
@@ -224,7 +224,7 @@ void ofApp::mousePressed(int x, int y, int button){
     
     pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
-    ofRectangle rect(camPosition, CAM_WIDTH, CAM_HEIGHT);
+    ofRectangle rect(ofVec2f(camPosition), CAM_WIDTH, CAM_HEIGHT);
     if (rect.inside(x, y)) {
         auto pixels = cam.getPixels();
         targetColor = pixels.getColor(x - camPosition->x, y - camPosition->y);
