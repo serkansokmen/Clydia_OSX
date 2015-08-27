@@ -36,7 +36,7 @@ private:
     ofxColorSlider  targetColor;
     ofxColorSlider  bgColor;
     ofxFloatSlider  threshold;
-    ofxPointSlider  camPosition;
+    ofxVec2Slider   camPosition;
     
     ofxFloatSlider  pointSpeed;
     ofxFloatSlider  branchDiffusion;
