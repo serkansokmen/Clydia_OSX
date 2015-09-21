@@ -7,6 +7,7 @@ Branch::~Branch()
         p = 0;
     }
     positions.clear();
+    vboMesh.clear();
 }
 
 
@@ -28,11 +29,22 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 	border.set(b);
     
     this->color.set(color);
+    
+    vboMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    vboMesh.addColor(color);
+    vboMesh.addVertex(pos);
+    vboMesh.addNormal(ofVec3f(0, 1, 0));
+    vboMesh.clear();
 }
 
 
 void Branch::update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode)
 {
+    // Erase from tail
+    if (positions.size() >= CL_BRANCH_TAIL_LENGTH) {
+        positions.pop_back();
+    }
+    
     switch (alphaMode) {
         case CL_BRANCH_DRAW_FLAT:
             break;
@@ -57,13 +69,8 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                 b_vel += b_acc;
                 b_pos += b_vel;
                 
-                ofPoint *current = new ofPoint;
-                current->set(b_pos.x, b_pos.y);
+                ofPoint *current = new ofPoint(b_pos);
                 positions.push_back(current);
-                
-                // Erase from tail
-                if (positions.size() > CL_BRANCH_TAIL_LENGTH)
-                    positions.erase(positions.begin());
                 
                 // Check for border bounds
                 if (current->x < border.x || current->x > border.width + border.x)
@@ -71,11 +78,18 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                 if (current->y < border.y || current->y > border.height + border.y)
                     b_vel *= -1;
             }
-            else
-                lifeState = CL_BRANCH_DEAD;
+            else {
+                if (positions.size() > 0) {
+                    positions.pop_front();
+                } else {
+                    lifeState = CL_BRANCH_DEAD;
+                }
+                
+            }
             break;
             
         case CL_BRANCH_DEAD:
+            positions.clear();
             break;
             
         default: break;
@@ -92,23 +106,13 @@ void Branch::draw()
             ofFill();
             ofSetPolyMode(OF_POLY_WINDING_NONZERO);
             ofBeginShape();
+            ofEnableDepthTest();
             for (auto p : positions) {
                 ofSetColor(color);
-                ofVertex(p->x, p->y);
+                ofVertex(p->x, p->y, p->z);
             }
+            ofDisableDepthTest();
             ofEndShape(false);
-            break;
-        }
-            
-        case CL_BRANCH_DRAW_CIRCLES:
-        {
-            float alpha = ofMap(age, 0, ageOfDeath, 0, 150.0);
-            float radius = ofMap(age, 0, ageOfDeath, 10.0f, 0.1f);
-            ofFill();
-            ofSetColor(color, alpha);
-            for (auto p : positions) {
-                ofDrawCircle(p->x, p->y, radius);
-            }
             break;
         }
             
@@ -116,5 +120,27 @@ void Branch::draw()
             break;
     }
     ofPopStyle();
+}
+
+void Branch::drawVbo()
+{
+    switch (drawMode)
+    {
+        case CL_BRANCH_DRAW_LEAVES:
+        {
+            ofFill();
+            vboMesh.clear();
+            for (auto p : positions) {
+                vboMesh.addColor(color);
+                vboMesh.addVertex(*p);
+            }
+            vboMesh.draw();
+//            vboMesh.drawFaces();
+            break;
+        }
+            
+        default :
+            break;
+    }
 }
 

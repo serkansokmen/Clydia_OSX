@@ -14,8 +14,7 @@
 
 class PointAnimator {
     
-    float x;
-    float y;
+    float x, y, z;
     
 public:
     void setup(const ofPoint& center);

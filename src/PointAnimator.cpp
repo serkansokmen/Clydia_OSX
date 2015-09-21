@@ -25,6 +25,7 @@ void PointAnimator::setup(const ofPoint& center){
 void PointAnimator::update(float dt, float diff){
     
     point.update(dt);
+    
     float radiusX = radius.x;
     float radiusY = radius.x;
     
@@ -39,8 +40,9 @@ void PointAnimator::update(float dt, float diff){
         
         x = radiusX * cos(angle*4) + center.x;
         y = radiusY * sin(angle*4) + center.y;
+        z = ofNoise(ofGetElapsedTimeMillis());
         
-        moveTo(ofPoint(x, y), false);
+        moveTo(ofPoint(x, y, z), false);
     }
     
 }

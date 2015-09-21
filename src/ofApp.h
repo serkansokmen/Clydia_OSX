@@ -16,7 +16,7 @@ private:
     void clearCanvas();
     void saveCanvas();
     void thresholdChanged(int& threshold);
-    void addBranchAt(const ofVec2f& pos, const ofColor& color);
+    void addBranchAt(const ofPoint& pos, const ofColor& color);
     void setupGui();
     
     void addBranchesFromImage(const ofImage& image, const ofVec2f& pos);
@@ -47,6 +47,9 @@ private:
     ofxToggle       bDrawVideo;
     ofxToggle       bUseDiff;
     ofxToggle       bUseFlatColors;
+    ofxToggle       bClearOnDraw;
+    ofxToggle       bUseVbo;
+    
     ofxButton       clearBtn;
     ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
@@ -59,8 +62,10 @@ private:
     PointAnimator   pointAnimator;
     ColorAnimator   colorAnimator;
     
+    int             counter;
+    
     // Branches
-    vector<Branch*>	branches;
+    deque <ofPtr<Branch > > branches;
     
     
 public:

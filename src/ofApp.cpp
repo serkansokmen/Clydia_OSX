@@ -2,7 +2,7 @@
 
 #define CAM_WIDTH           320
 #define CAM_HEIGHT          240
-#define MAX_BRANCHES        3200
+#define MAX_BRANCHES        200
 #define IMAGE_DRAW_RES_X    50
 #define IMAGE_DRAW_RES_Y    50
 #define DIFFUSION_MIN       0.01f
@@ -14,11 +14,11 @@ void ofApp::setup(){
     // Main setup
     //------------------------------------------------
     ofBackground(0);
-    ofSetVerticalSync(true);
+    ofSetVerticalSync(false);
     ofEnableAlphaBlending();
     ofEnableSmoothing();
     ofEnableAntiAliasing();
-    ofSetFrameRate(60);
+    ofSetFrameRate(10000);
     
     //------------------------------------------------
     // Contour finder
@@ -92,6 +92,7 @@ void ofApp::update(){
     
     // Update branches
     clDrawAlphaMode mode;
+    
     if (bUseFlatColors) {
         mode = CL_BRANCH_DRAW_FLAT;
     } else {
@@ -102,23 +103,28 @@ void ofApp::update(){
         if (b->getIsAlive()) {
             b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(), mode);
         } else {
-            delete b;
-            b = 0;
-            branches.erase(branches.begin()+i);
+            branches.pop_back();
         }
     }
     
     // Draw to fbo
     fbo.begin();
-//    ofEnableDepthTest();
+    if (bClearOnDraw) {
+        ofClear(0, 0, 0, 0);
+    }
+    ofEnableDepthTest();
     ofPushMatrix();
     for (auto b : branches) {
         ofSetColor(255);
         ofSetLineWidth(0.1f);
-        b->draw();
+        if (bUseVbo) {
+            b->drawVbo();
+        } else {
+            b->draw();
+        }
     }
     ofPopMatrix();
-//    ofDisableDepthTest();
+    ofDisableDepthTest();
     fbo.end();
 }
 
@@ -157,6 +163,12 @@ void ofApp::draw(){
         gui.draw();
         ofPopMatrix();
     }
+    
+    ofDrawBitmapString(ofToString(1000.f/ofGetFrameRate()), 400, 40);
+    ofDrawBitmapString(ofToString(branches.size()), 400, 80);
+    
+//    ofSetColor(ofColor::white);
+//    ofDrawLine(0, ofGetFrameNum(), ofGetWidth(), ofGetHeight());
 }
 
 //--------------------------------------------------------------
@@ -178,12 +190,8 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::clearCanvas(){
-    for (int i=0;i<branches.size();i++){
-        delete branches[i];
-        branches[i] = 0;
-    }
+    pointAnimator.moveTo(ofGetWindowRect().getCenter(), 0);
     branches.clear();
-    
     ofColor c(bgColor);
     fbo.begin();
     ofClear(c.r, c.g, c.b, 0);
@@ -215,14 +223,14 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
     
-    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
-    addBranchAt(ofVec2f(x, y), branchColor);
+//    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+//    addBranchAt(ofVec2f(x, y), branchColor);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     
-    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+//    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
     ofRectangle rect(ofVec2f(camPosition), CAM_WIDTH, CAM_HEIGHT);
     if (rect.inside(x, y)) {
@@ -235,7 +243,7 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     
-    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
+//    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
 }
 
 //--------------------------------------------------------------
@@ -295,16 +303,16 @@ void ofApp::addBranchesFromImage(const ofImage& image, const ofVec2f& pos) {
 }
 
 //--------------------------------------------------------------
-void ofApp::addBranchAt(const ofVec2f &pos, const ofColor& color)
+void ofApp::addBranchAt(const ofPoint& pos, const ofColor& color)
 {
     if (branches.size() > MAX_BRANCHES) {
-        ofLog() << "Max branch count reached." << endl;
-//        return;
+//        ofLog() << "Max branch count reached." << endl;
+        return;
     }
-    Branch *branch = new Branch;
+    ofPtr<Branch> branch(new Branch());
     branch->setup(color, pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
     branch->setDrawMode(CL_BRANCH_DRAW_LEAVES);
-    branches.push_back(branch);
+    branches.push_front(branch);
 }
 
 //--------------------------------------------------------------
@@ -340,6 +348,8 @@ void ofApp::setupGui(){
     gui.add(bUseFlatColors.setup("Use flat colors", false));
     gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
     gui.add(bgColor.setup("Background Color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
+    gui.add(bUseVbo.setup("Use VBO", false));
+    gui.add(bClearOnDraw.setup("Clear on Draw", true));
     
     gui.add(pointSpeed.setup("Speed", 0.24f, 0.01f, 0.40f));
     gui.add(branchDiffusion.setup("Branch Diffusion", 0.12f, DIFFUSION_MIN, DIFFUSION_MAX));

@@ -6,7 +6,7 @@
 #define CL_BRANCH_AGE_MAX           800
 #define CL_BRANCH_AGING_COEFF_MIN   2.f
 #define CL_BRANCH_AGING_COEFF_MAX   6.f
-#define CL_BRANCH_TAIL_LENGTH       64.f
+#define CL_BRANCH_TAIL_LENGTH       100.f
 
 enum clBranchLifeState
 {
@@ -16,8 +16,7 @@ enum clBranchLifeState
 
 enum clBranchDrawMode
 {
-    CL_BRANCH_DRAW_LEAVES,
-    CL_BRANCH_DRAW_CIRCLES
+    CL_BRANCH_DRAW_LEAVES
 };
 
 enum clDrawAlphaMode
@@ -44,6 +43,8 @@ private:
     
 	ofColor		color;
 	ofRectangle border;
+    
+    ofVboMesh   vboMesh;
 	
 public:
     ~Branch();
@@ -51,6 +52,7 @@ public:
 	void setup(const ofColor& color, const ofPoint& pos, const ofRectangle& b);
 	void update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode);
 	void draw();
+    void drawVbo();
     
     inline ofPoint getPosition() const {
         return b_pos;
@@ -69,5 +71,5 @@ public:
     }
     
 	
-	vector <ofPoint*> positions;
+	deque<ofPoint* > positions;
 };
