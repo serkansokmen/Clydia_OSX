@@ -129,11 +129,26 @@ void Branch::drawVbo()
         case CL_BRANCH_DRAW_LEAVES:
         {
             ofFill();
-            vboMesh.clear();
-            for (auto p : positions) {
+//            vboMesh.clear();
+            
+            if (positions.size() > 1 && positions.size() < CL_BRANCH_TAIL_LENGTH) {
+                
+                vboMesh.removeColor(0);
+                vboMesh.removeVertex(0);
+                
+                auto first = positions[positions.size()-1];
+                auto prev = positions[positions.size()-2];
                 vboMesh.addColor(color);
-                vboMesh.addVertex(*p);
+                vboMesh.addVertex(*prev);
+                vboMesh.addColor(color);
+                vboMesh.addVertex(*first);
+            } else {
+                
             }
+//            for (auto p : positions) {
+//                vboMesh.addColor(color);
+//                vboMesh.addVertex(*p);
+//            }
             vboMesh.draw();
 //            vboMesh.drawFaces();
             break;

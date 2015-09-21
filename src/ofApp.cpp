@@ -18,7 +18,7 @@ void ofApp::setup(){
     ofEnableAlphaBlending();
     ofEnableSmoothing();
     ofEnableAntiAliasing();
-    ofSetFrameRate(10000);
+    ofSetFrameRate(60);
     
     //------------------------------------------------
     // Contour finder
