@@ -15,7 +15,7 @@ void ofApp::setup(){
     // Main setup
     //------------------------------------------------
     ofBackground(0);
-    ofSetVerticalSync(false);
+    ofSetVerticalSync(true);
     ofEnableAlphaBlending();
     ofEnableSmoothing();
     ofEnableAntiAliasing();
