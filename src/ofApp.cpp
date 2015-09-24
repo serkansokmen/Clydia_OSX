@@ -30,6 +30,8 @@ void ofApp::setup(){
     // an object can move up to 32 pixels per frame
     contourFinder.getTracker().setMaximumDistance(32);
     
+    this->mousePos = ofPoint(mouseX, mouseY, 0);
+    
     setupGui();
     bDrawGui = true;
     
@@ -53,20 +55,22 @@ void ofApp::update(){
     //app timebase, to send to all animatable objects
     float dt = 1.0f / 60.0f;
     
-    if (bUseAnimator) {
+    mousePos.set(mouseX, mouseY, 0);
+    pointAnimator.update(dt);
+    colorAnimator.update(dt);
+    
+    if (colorAnimator.color.getTargetColor() != branchColor) {
+        if (bUseFlatColors) {
+            colorAnimator.colorTo(ofColor::black);
+        } else {
+            colorAnimator.colorTo(branchColor);
+        }
+    }
+    
+    if (!bFreeDraw && bUseAnimator) {
         pointAnimator.speed = pointSpeed;
         pointAnimator.radius.set(pointRadius);
-        pointAnimator.update(dt, pointDiff);
-        
-        if (colorAnimator.color.getTargetColor() != branchColor) {
-            if (bUseFlatColors) {
-                colorAnimator.colorTo(ofColor::black);
-            } else {
-                colorAnimator.colorTo(branchColor);
-            }
-            colorAnimator.update(dt);
-        }
-        
+        pointAnimator.moveCircular(pointDiff);
         addBranchAt(pointAnimator.point.getCurrentPosition(), branchColor);
     }
     
@@ -138,7 +142,7 @@ void ofApp::draw(){
     
     float diff = ofNormalize(branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
     
-    if (bUseAnimator) {
+    if (bDrawGui && bUseAnimator) {
         ofColor aColor(bgColor);
         ofPushStyle();
         ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b);
