@@ -27,10 +27,6 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
     this->color.set(color);
     
     vboMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-    vboMesh.addColor(color);
-    vboMesh.addVertex(pos);
-    vboMesh.addNormal(ofVec3f(0, 1, 0));
-    vboMesh.clear();
 }
 
 
@@ -124,29 +120,13 @@ void Branch::drawVbo()
     {
         case CL_BRANCH_DRAW_LEAVES:
         {
-            ofFill();
-//            vboMesh.clear();
-            
-            if (positions.size() > 1 && positions.size() < CL_BRANCH_TAIL_LENGTH) {
-                
-                vboMesh.removeColor(0);
-                vboMesh.removeVertex(0);
-                
-                auto first = positions[positions.size()-1];
-                auto prev = positions[positions.size()-2];
+            vboMesh.clear();
+            for (auto p : positions) {
                 vboMesh.addColor(color);
-                vboMesh.addVertex(*prev);
-                vboMesh.addColor(color);
-                vboMesh.addVertex(*first);
-            } else {
-                
+                vboMesh.addVertex(*p);
             }
-//            for (auto p : positions) {
-//                vboMesh.addColor(color);
-//                vboMesh.addVertex(*p);
-//            }
             vboMesh.draw();
-//            vboMesh.drawFaces();
+
             break;
         }
             
