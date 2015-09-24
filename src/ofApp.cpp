@@ -96,17 +96,11 @@ void ofApp::update(){
     }
     
     // Update branches
-    clDrawAlphaMode mode;
-    
-    if (bUseFlatColors) {
-        mode = CL_BRANCH_DRAW_FLAT;
-    } else {
-        mode = CL_BRANCH_DRAW_GRADIENT;
-    }
     for (int i=0; i<branches.size(); i++) {
         auto b = branches[i];
         if (b->getIsAlive()) {
-            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(), mode);
+            b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(),
+                      bUseFlatColors ? CL_BRANCH_DRAW_FLAT : CL_BRANCH_DRAW_GRADIENT);
         } else {
             branches.pop_back();
         }
@@ -157,30 +151,32 @@ void ofApp::draw(){
         ofPopStyle();
     }
     
-    if (bDrawVideo && bUseCamera) {
+    if (bDrawGui && bDrawVideo && bUseCamera) {
         ofxCv::RectTracker& tracker = contourFinder.getTracker();
         ofSetColor(255);
         cam.draw(ofVec2f(camPosition), cam.getWidth(), cam.getHeight());
     }
     
-    if (bDrawGui){
+    if (bDrawGui) {
         ofSetColor(255);
         gui.draw();
-        ofPopMatrix();
     }
-    
-    ofDrawBitmapString(ofToString(1000.f/ofGetFrameRate()), 400, 40);
-    ofDrawBitmapString(ofToString(branches.size()), 400, 80);
-    
-//    ofSetColor(ofColor::white);
-//    ofDrawLine(0, ofGetFrameNum(), ofGetWidth(), ofGetHeight());
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+void ofApp::keyPressed(int key) {
     switch (key){
         case ' ':
             bDrawGui = !bDrawGui;
+            break;
+        case 'c':
+            branchColor = ofColor(ofRandom(255.f), ofRandom(255.f), ofRandom(255.f), ofRandom(55.f) + 200.f);
+            break;
+        case 'd':
+            branchDiffusion = ofRandom(DIFFUSION_MIN, DIFFUSION_MAX);
+            break;
+        case 'C':
+            clearCanvas();
             break;
         case 's':
             gui.saveToFile("settings.xml");
@@ -195,7 +191,7 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::clearCanvas(){
-    pointAnimator.moveTo(ofGetWindowRect().getCenter(), 0);
+    pointAnimator.moveTo(ofGetWindowRect().getCenter(), true);
     branches.clear();
     ofColor c(bgColor);
     fbo.begin();
@@ -217,19 +213,20 @@ void ofApp::saveCanvas(){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    bIsMouseDown = true;
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    
-//    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
-//    addBranchAt(ofVec2f(x, y), branchColor);
+    if (bFreeDraw) {
+        for (int i=0; i<DRAG_DRAW_RES; i++) {
+            addBranchAt(ofVec2f(x, y), branchColor);
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -247,7 +244,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    
+    bIsMouseDown = false;
 //    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
 }
 
@@ -350,6 +347,7 @@ void ofApp::setupGui(){
     gui.setDefaultTextPadding(20);
     
     gui.add(drawingLabel.setup("Drawing", ""));
+    gui.add(bFreeDraw.setup("Freehand", false));
     gui.add(bUseFlatColors.setup("Use flat colors", false));
     gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
     gui.add(bgColor.setup("Background Color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
