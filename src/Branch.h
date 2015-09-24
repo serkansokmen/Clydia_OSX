@@ -71,5 +71,5 @@ public:
     }
     
 	
-	deque<ofPoint* > positions;
+	deque<ofPtr<ofPoint>> positions;
 };

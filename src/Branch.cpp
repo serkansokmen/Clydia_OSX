@@ -2,10 +2,6 @@
 
 Branch::~Branch()
 {
-    for (auto p : positions) {
-        delete p;
-        p = 0;
-    }
     positions.clear();
     vboMesh.clear();
 }
@@ -65,11 +61,11 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                 theta += speed;
                 
                 b_acc.set(ofRandomf(), ofRandomf(), ofRandomf());
-                b_acc *= ofRandomf()*diffusion;
+                b_acc *= ofRandomf()*diffusion + 0.01f;
                 b_vel += b_acc;
                 b_pos += b_vel;
                 
-                ofPoint *current = new ofPoint(b_pos);
+                ofPtr<ofPoint> current(new ofPoint(b_pos));
                 positions.push_back(current);
                 
                 // Check for border bounds
