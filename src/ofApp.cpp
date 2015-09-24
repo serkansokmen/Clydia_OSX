@@ -2,11 +2,12 @@
 
 #define CAM_WIDTH           320
 #define CAM_HEIGHT          240
-#define MAX_BRANCHES        200
+#define MAX_BRANCHES        500
 #define IMAGE_DRAW_RES_X    50
 #define IMAGE_DRAW_RES_Y    50
-#define DIFFUSION_MIN       0.01f
-#define DIFFUSION_MAX       0.40f
+#define DIFFUSION_MIN       0.024f
+#define DIFFUSION_MAX       0.16f
+#define DRAG_DRAW_RES       5
 
 //--------------------------------------------------------------
 void ofApp::setup(){
