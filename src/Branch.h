@@ -2,11 +2,11 @@
 
 #include "ofMain.h"
 
-#define CL_BRANCH_AGE_MIN           80
-#define CL_BRANCH_AGE_MAX           800
+#define CL_BRANCH_AGE_MIN           200
+#define CL_BRANCH_AGE_MAX           600
 #define CL_BRANCH_AGING_COEFF_MIN   2.f
 #define CL_BRANCH_AGING_COEFF_MAX   6.f
-#define CL_BRANCH_TAIL_LENGTH       100.f
+#define CL_BRANCH_TAIL_LENGTH       200.f
 
 enum clBranchLifeState
 {
