@@ -86,11 +86,11 @@ void ofApp::update(){
         // Update tracked positions
         int n = contourFinder.size();
         for(int i = 0; i < n; i++) {
-            ofVec2f centroid = ofxCv::toOf(contourFinder.getCentroid(i));
-            ofVec2f *tPos = new ofVec2f;
+            ofPoint centroid = ofxCv::toOf(contourFinder.getCentroid(i));
+            ofPoint *tPos = new ofPoint;
             tPos->x = ofMap(centroid.x, 0, cam.getWidth(), 0, ofGetWidth());
             tPos->y = ofMap(centroid.y, 0, cam.getHeight(), 0, ofGetHeight());
-            
+            tPos->z = 0;
             addBranchAt(*tPos, branchColor);
         }
     }
