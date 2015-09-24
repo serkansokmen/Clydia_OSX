@@ -15,10 +15,12 @@
 class PointAnimator {
     
     float x, y, z;
+    float dt;
     
 public:
     void setup(const ofPoint& center);
-    void update(float dt, float diff);
+    void update(float dt);
+    void moveCircular(float diff);
     void moveTo(const ofPoint& pos, bool immediate=true);
     
     ofPoint                 center;
