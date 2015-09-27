@@ -51,12 +51,15 @@ private:
     ofxToggle       bUseVbo;
     
     ofxButton       clearBtn;
+    ofxToggle       bFreeDraw;
     ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
     ofxPanel        gui;
     
     ofFbo           fbo;
     
+    ofPoint    mousePos;
+    bool bIsMouseDown;
     bool bDrawGui;
     
     PointAnimator   pointAnimator;

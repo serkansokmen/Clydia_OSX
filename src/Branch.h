@@ -2,11 +2,11 @@
 
 #include "ofMain.h"
 
-#define CL_BRANCH_AGE_MIN           80
-#define CL_BRANCH_AGE_MAX           800
+#define CL_BRANCH_AGE_MIN           200
+#define CL_BRANCH_AGE_MAX           600
 #define CL_BRANCH_AGING_COEFF_MIN   2.f
 #define CL_BRANCH_AGING_COEFF_MAX   6.f
-#define CL_BRANCH_TAIL_LENGTH       100.f
+#define CL_BRANCH_TAIL_LENGTH       200.f
 
 enum clBranchLifeState
 {
@@ -22,29 +22,30 @@ enum clBranchDrawMode
 enum clDrawAlphaMode
 {
     CL_BRANCH_DRAW_FLAT,
-    CL_BRANCH_DRAW_GRADIENT
+    CL_BRANCH_DRAW_GRADIENT,
+    CL_BRANCH_DRAW_AGE_ALPHA
 };
 
 class Branch
 {
 private:
-    clBranchLifeState lifeState;
-    clBranchDrawMode  drawMode;
-	
-	ofPoint	b_pos;
+    
+    ofColor		color;
+    ofRectangle border;
+    ofVboMesh   vboMesh;
+    
+    ofPoint	b_pos;
 	ofPoint	b_acc;
 	ofPoint	b_vel;
     
-    int age;
-    int ageOfDeath;
-    int ageCoeff;
-    float theta;
-    float alpha;
+    clBranchLifeState lifeState;
+    clBranchDrawMode  drawMode;
     
-	ofColor		color;
-	ofRectangle border;
+    float   theta;
     
-    ofVboMesh   vboMesh;
+    int     age;
+    int     ageOfDeath;
+    int     ageCoeff;
 	
 public:
     ~Branch();
@@ -71,5 +72,5 @@ public:
     }
     
 	
-	deque<ofPoint* > positions;
+	deque<ofPtr<ofPoint>> positions;
 };

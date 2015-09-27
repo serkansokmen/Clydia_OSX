@@ -22,9 +22,12 @@ void PointAnimator::setup(const ofPoint& center){
     this->point.setCurve(EASE_IN_EASE_OUT);
 }
 
-void PointAnimator::update(float dt, float diff){
-    
+void PointAnimator::update(float dt){
+    this->dt = dt;
     point.update(dt);
+}
+
+void PointAnimator::moveCircular(float diff){
     
     float radiusX = radius.x;
     float radiusY = radius.x;
@@ -40,9 +43,9 @@ void PointAnimator::update(float dt, float diff){
         
         x = radiusX * cos(angle*4) + center.x;
         y = radiusY * sin(angle*4) + center.y;
-        z = ofNoise(ofGetElapsedTimeMillis());
+//        z = ofNoise(ofGetElapsedTimeMillis());
         
-        moveTo(ofPoint(x, y, z), false);
+        moveTo(ofPoint(x, y, z), true);
     }
     
 }
@@ -53,6 +56,8 @@ void PointAnimator::moveTo(const ofPoint &pos, bool immediate){
             point.animateTo(pos);
         }
     } else {
-        point.animateTo(pos);
+//        point.animateTo(pos);
+//        point.setDuration(0);
+        point.setPosition(pos);
     }
 }
