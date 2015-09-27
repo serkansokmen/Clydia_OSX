@@ -15,10 +15,10 @@ void ofApp::setup(){
     // Main setup
     //------------------------------------------------
     ofBackground(0);
-    ofSetVerticalSync(true);
     ofEnableAlphaBlending();
     ofEnableSmoothing();
     ofEnableAntiAliasing();
+    ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
     //------------------------------------------------
@@ -56,8 +56,6 @@ void ofApp::update(){
     //app timebase, to send to all animatable objects
     float dt = 1.0f / 60.0f;
     
-    mousePos.set(mouseX, mouseY, 0);
-    pointAnimator.update(dt);
     colorAnimator.update(dt);
     
     if (colorAnimator.color.getTargetColor() != branchColor) {
@@ -68,11 +66,20 @@ void ofApp::update(){
         }
     }
     
-    if (!bFreeDraw && bUseAnimator) {
+    if (bUseAnimator) {
+        pointAnimator.update(dt);
         pointAnimator.speed = pointSpeed;
         pointAnimator.radius.set(pointRadius);
         pointAnimator.moveCircular(pointDiff);
         addBranchAt(pointAnimator.point.getCurrentPosition(), branchColor);
+    } else {
+        pointAnimator.point.reset();
+    }
+    if (bFreeDraw) {
+        mousePos.set(mouseX, mouseY, 0);
+        if (bIsMouseDown) {
+            addBranchAt(mousePos, branchColor);
+        }
     }
     
     if (bUseCamera && cam.isInitialized()) {
@@ -100,7 +107,7 @@ void ofApp::update(){
         auto b = branches[i];
         if (b->getIsAlive()) {
             b->update(pointSpeed*0.1f, branchDiffusion, colorAnimator.color.getCurrentColor(),
-                      bUseFlatColors ? CL_BRANCH_DRAW_FLAT : CL_BRANCH_DRAW_GRADIENT);
+                      bUseFlatColors ? CL_BRANCH_DRAW_GRADIENT : CL_BRANCH_DRAW_AGE_ALPHA);
         } else {
             branches.pop_back();
         }
@@ -144,10 +151,10 @@ void ofApp::draw(){
         ofNoFill();
         ofSetCircleResolution(100.f);
         ofSetLineWidth(diff);
-        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*100.f);
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), 10.f + diff*25.f);
         ofSetColor(255.f-aColor.r, 255.f-aColor.g, 255.f-aColor.b, 20);
         ofFill();
-        ofDrawCircle(pointAnimator.point.getCurrentPosition(), diff*95.f);
+        ofDrawCircle(pointAnimator.point.getCurrentPosition(), 10.f + diff*24.f);
         ofPopStyle();
     }
     
@@ -173,7 +180,9 @@ void ofApp::keyPressed(int key) {
             branchColor = ofColor(ofRandom(255.f), ofRandom(255.f), ofRandom(255.f), ofRandom(55.f) + 200.f);
             break;
         case 'd':
-            branchDiffusion = ofRandom(DIFFUSION_MIN, DIFFUSION_MAX);
+            branchDiffusion = ofRandom(DIFFUSION_MIN, ofLerp(DIFFUSION_MIN, DIFFUSION_MAX, .1));
+        case 'D':
+            branchDiffusion = ofRandom(ofLerp(DIFFUSION_MIN, DIFFUSION_MAX, .5), DIFFUSION_MAX);
             break;
         case 'C':
             clearCanvas();
@@ -222,16 +231,13 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (bFreeDraw) {
-        for (int i=0; i<DRAG_DRAW_RES; i++) {
-            addBranchAt(ofVec2f(x, y), branchColor);
-        }
-    }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     
+    bIsMouseDown = true;
 //    pointAnimator.moveTo(ofPoint(x, y, ofRandomf()*100.f), true);
     
     ofRectangle rect(ofVec2f(camPosition), CAM_WIDTH, CAM_HEIGHT);
@@ -350,6 +356,7 @@ void ofApp::setupGui(){
     gui.add(bFreeDraw.setup("Freehand", false));
     gui.add(bUseFlatColors.setup("Use flat colors", false));
     gui.add(branchColor.setup("Branch Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+    
     gui.add(bgColor.setup("Background Color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
     gui.add(bUseVbo.setup("Use VBO", false));
     gui.add(bClearOnDraw.setup("Clear on Draw", true));

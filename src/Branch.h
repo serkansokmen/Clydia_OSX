@@ -22,29 +22,30 @@ enum clBranchDrawMode
 enum clDrawAlphaMode
 {
     CL_BRANCH_DRAW_FLAT,
-    CL_BRANCH_DRAW_GRADIENT
+    CL_BRANCH_DRAW_GRADIENT,
+    CL_BRANCH_DRAW_AGE_ALPHA
 };
 
 class Branch
 {
 private:
-    clBranchLifeState lifeState;
-    clBranchDrawMode  drawMode;
-	
-	ofPoint	b_pos;
+    
+    ofColor		color;
+    ofRectangle border;
+    ofVboMesh   vboMesh;
+    
+    ofPoint	b_pos;
 	ofPoint	b_acc;
 	ofPoint	b_vel;
     
-    int age;
-    int ageOfDeath;
-    int ageCoeff;
-    float theta;
-    float alpha;
+    clBranchLifeState lifeState;
+    clBranchDrawMode  drawMode;
     
-	ofColor		color;
-	ofRectangle border;
+    float   theta;
     
-    ofVboMesh   vboMesh;
+    int     age;
+    int     ageOfDeath;
+    int     ageCoeff;
 	
 public:
     ~Branch();

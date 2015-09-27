@@ -43,7 +43,7 @@ void PointAnimator::moveCircular(float diff){
         
         x = radiusX * cos(angle*4) + center.x;
         y = radiusY * sin(angle*4) + center.y;
-        z = ofNoise(ofGetElapsedTimeMillis());
+//        z = ofNoise(ofGetElapsedTimeMillis());
         
         moveTo(ofPoint(x, y, z), true);
     }

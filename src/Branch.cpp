@@ -41,8 +41,10 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
         case CL_BRANCH_DRAW_FLAT:
             break;
         case CL_BRANCH_DRAW_GRADIENT:
-            alpha = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0);
-            this->color.a = alpha;
+            this->color.setBrightness(ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, 255.f, 0.f));
+            break;
+        case CL_BRANCH_DRAW_AGE_ALPHA:
+            this->color.a = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0.f);
             break;
         default:
             break;
@@ -56,8 +58,8 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                 age += ageCoeff;
                 theta += speed;
                 
-                b_acc.set(ofRandomf(), ofRandomf(), ofRandomf());
-                b_acc *= ofRandomf()*diffusion + 0.01f;
+                b_acc.set(ofRandomf(), ofRandomf(), 0);
+                b_acc *= diffusion + 0.01f;
                 b_vel += b_acc;
                 b_pos += b_vel;
                 
@@ -71,12 +73,12 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                     b_vel *= -1;
             }
             else {
+                
                 if (positions.size() > 0) {
                     positions.pop_front();
                 } else {
                     lifeState = CL_BRANCH_DEAD;
                 }
-                
             }
             break;
             
@@ -121,9 +123,23 @@ void Branch::drawVbo()
         case CL_BRANCH_DRAW_LEAVES:
         {
             vboMesh.clear();
-            for (auto p : positions) {
-                vboMesh.addColor(color);
-                vboMesh.addVertex(*p);
+            for (int i=0; i<positions.size(); i++) {
+                
+                if (i > 1) {
+                    ofVec2f current = *positions[i];
+                    ofVec2f prev = *positions[i-1];
+                    ofVec2f back = back - current;
+                    
+                    vboMesh.addColor(color);
+                    vboMesh.addVertex(current);
+                    vboMesh.addColor(color);
+                    vboMesh.addVertex(prev);
+//                    vboMesh.addColor(color);
+//                    vboMesh.addVertex(back);
+                }
+                
+//                vboMesh.addColor(color);
+//                vboMesh.addVertex(*positions[i]);
             }
             vboMesh.draw();
 
