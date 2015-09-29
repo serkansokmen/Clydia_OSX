@@ -7,6 +7,15 @@
 #include "PointAnimator.h"
 #include "ColorAnimator.h"
 
+#include "DrawingParams.h"
+#include "AnimatorParams.h"
+#include "TrackingParams.h"
+
+
+#define IMAGE_DRAW_RES_X    50
+#define IMAGE_DRAW_RES_Y    50
+#define DRAG_DRAW_RES       5
+
 
 class ofApp : public ofBaseApp{
 
@@ -22,37 +31,16 @@ private:
     void addBranchesFromImage(const ofImage& image, const ofVec2f& pos);
     
     ofVideoGrabber cam;
+
+    ofxCv::ContourFinder        contourFinder;
+    ofxCv::TrackingColorMode    trackingColorMode;
     
-    ofxCv::ContourFinder contourFinder;
-    ofxCv::TrackingColorMode trackingColorMode;
-    
-    ofxToggle       bUseCamera;
-    
-    ofxLabel        drawingLabel;
-    ofxLabel        trackingLabel;
-    ofxLabel        generalLabel;
-    
-    ofxColorSlider  branchColor;
-    ofxColorSlider  targetColor;
-    ofxColorSlider  bgColor;
-    ofxFloatSlider  threshold;
-    ofxVec2Slider   camPosition;
-    
-    ofxFloatSlider  pointSpeed;
-    ofxFloatSlider  branchDiffusion;
-    ofxVec2Slider   pointRadius;
-    ofxFloatSlider  pointDiff;
-    
-    ofxToggle       bUseHSV;
-    ofxToggle       bDrawVideo;
-    ofxToggle       bUseDiff;
-    ofxToggle       bUseFlatColors;
-    ofxToggle       bClearOnDraw;
-    ofxToggle       bUseVbo;
+    ofParameterGroup        parameters;
+    AnimatorParams          animatorParams;
+    DrawingParams           drawingParams;
+    TrackingParams          trackingParams;
     
     ofxButton       clearBtn;
-    ofxToggle       bFreeDraw;
-    ofxToggle       bUseAnimator;
     ofxButton       saveBtn;
     ofxPanel        gui;
     

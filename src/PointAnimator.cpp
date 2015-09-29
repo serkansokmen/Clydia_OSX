@@ -27,27 +27,24 @@ void PointAnimator::update(float dt){
     point.update(dt);
 }
 
-void PointAnimator::moveCircular(float diff){
+void PointAnimator::moveCircular(float diff, bool immediate){
     
     float radiusX = radius.x;
-    float radiusY = radius.x;
+    float radiusY = radius.y;
     
-    if (!point.isOrWillBeAnimating()) {
-        angle = ofGetElapsedTimef() * speed;
-        if (radiusX > radiusX/2) {
-            radiusX -= radiusX*diff;
-        }
-        if (radiusY > radiusY/2) {
-            radiusY -= radiusY*diff;
-        }
-        
-        x = radiusX * cos(angle*4) + center.x;
-        y = radiusY * sin(angle*4) + center.y;
-//        z = ofNoise(ofGetElapsedTimeMillis());
-        
-        moveTo(ofPoint(x, y, z), true);
+    angle = ofGetElapsedTimef() * speed;
+    if (radiusX > radiusX/2) {
+        radiusX -= radiusX*diff;
+    }
+    if (radiusY > radiusY/2) {
+        radiusY -= radiusY*diff;
     }
     
+    x = radiusX * cos(angle*4) + center.x;
+    y = radiusY * sin(angle*4) + center.y;
+//    z = ofNoise(ofGetElapsedTimeMillis());
+    
+    moveTo(ofPoint(x, y, z), immediate);
 }
 
 void PointAnimator::moveTo(const ofPoint &pos, bool immediate){
@@ -56,8 +53,6 @@ void PointAnimator::moveTo(const ofPoint &pos, bool immediate){
             point.animateTo(pos);
         }
     } else {
-//        point.animateTo(pos);
-//        point.setDuration(0);
         point.setPosition(pos);
     }
 }

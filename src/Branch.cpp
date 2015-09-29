@@ -30,42 +30,41 @@ void Branch::setup(const ofColor& color, const ofPoint&pos, const ofRectangle&b)
 }
 
 
-void Branch::update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode)
+void Branch::update(const float& speed, const int& length, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode)
 {
-    // Erase from tail
-    if (positions.size() >= CL_BRANCH_TAIL_LENGTH) {
-        positions.pop_back();
+    // Die after length
+    if (positions.size() >= length) {
+        lifeState = CL_BRANCH_DYING;
     }
+
     
     switch (alphaMode) {
         case CL_BRANCH_DRAW_FLAT:
             break;
         case CL_BRANCH_DRAW_GRADIENT:
-            this->color.setBrightness(ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, 255.f, 0.f));
+            this->color.setBrightness(255.f - ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, 0.f, 255.f));
             break;
         case CL_BRANCH_DRAW_AGE_ALPHA:
-            this->color.a = ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, color.a, 0.f);
+            this->color.a = 255.f - ofMap(age, CL_BRANCH_AGE_MIN, CL_BRANCH_AGE_MAX, 0.f, 255.f);
             break;
         default:
             break;
     }
-
-	switch (lifeState)
+    
+    age += ageCoeff;
+    theta += speed;
+    b_acc.set(ofRandomf(), ofRandomf(), 0);
+    b_acc *= diffusion + 0.01f;
+    b_vel += b_acc;
+    b_pos += b_vel;
+    ofPtr<ofPoint> current(new ofPoint(b_pos));
+    positions.push_back(current);
+    
+    switch (lifeState)
     {
         case CL_BRANCH_SPAWNING:
             if (age < CL_BRANCH_AGE_MAX)
             {
-                age += ageCoeff;
-                theta += speed;
-                
-                b_acc.set(ofRandomf(), ofRandomf(), 0);
-                b_acc *= diffusion + 0.01f;
-                b_vel += b_acc;
-                b_pos += b_vel;
-                
-                ofPtr<ofPoint> current(new ofPoint(b_pos));
-                positions.push_back(current);
-                
                 // Check for border bounds
                 if (current->x < border.x || current->x > border.width + border.x)
                     b_vel *= -1;
@@ -73,17 +72,21 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
                     b_vel *= -1;
             }
             else {
-                
-                if (positions.size() > 0) {
-                    positions.pop_front();
-                } else {
-                    lifeState = CL_BRANCH_DEAD;
-                }
+                lifeState = CL_BRANCH_DYING;
             }
             break;
             
+        case CL_BRANCH_DYING:
+        {
+            if (positions.size() > length) {
+                positions.pop_front();
+            } else {
+                lifeState = CL_BRANCH_DEAD;
+            }
+        }
+            break;
+            
         case CL_BRANCH_DEAD:
-            positions.clear();
             break;
             
         default: break;
@@ -91,32 +94,6 @@ void Branch::update(const float& speed, const float& diffusion, const ofColor& c
 }
 
 void Branch::draw()
-{
-    ofPushStyle();
-    switch (drawMode)
-    {
-        case CL_BRANCH_DRAW_LEAVES:
-        {
-            ofFill();
-            ofSetPolyMode(OF_POLY_WINDING_NONZERO);
-            ofBeginShape();
-            ofEnableDepthTest();
-            for (auto p : positions) {
-                ofSetColor(color);
-                ofVertex(p->x, p->y, p->z);
-            }
-            ofDisableDepthTest();
-            ofEndShape(false);
-            break;
-        }
-            
-        default :
-            break;
-    }
-    ofPopStyle();
-}
-
-void Branch::drawVbo()
 {
     switch (drawMode)
     {
@@ -127,22 +104,16 @@ void Branch::drawVbo()
                 
                 if (i > 1) {
                     ofVec2f current = *positions[i];
-                    ofVec2f prev = *positions[i-1];
-                    ofVec2f back = back - current;
+//                    ofVec2f prev = *positions[i-1];
+//                    ofVec2f back = back - current;
                     
                     vboMesh.addColor(color);
                     vboMesh.addVertex(current);
-                    vboMesh.addColor(color);
-                    vboMesh.addVertex(prev);
 //                    vboMesh.addColor(color);
-//                    vboMesh.addVertex(back);
+//                    vboMesh.addVertex(prev);
                 }
-                
-//                vboMesh.addColor(color);
-//                vboMesh.addVertex(*positions[i]);
             }
             vboMesh.draw();
-
             break;
         }
             
@@ -150,4 +121,3 @@ void Branch::drawVbo()
             break;
     }
 }
-

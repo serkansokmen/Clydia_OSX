@@ -4,13 +4,13 @@
 
 #define CL_BRANCH_AGE_MIN           200
 #define CL_BRANCH_AGE_MAX           600
-#define CL_BRANCH_AGING_COEFF_MIN   2.f
-#define CL_BRANCH_AGING_COEFF_MAX   6.f
-#define CL_BRANCH_TAIL_LENGTH       200.f
+#define CL_BRANCH_AGING_COEFF_MIN   1.0f
+#define CL_BRANCH_AGING_COEFF_MAX   4.0f
 
 enum clBranchLifeState
 {
     CL_BRANCH_SPAWNING,
+    CL_BRANCH_DYING,
     CL_BRANCH_DEAD
 };
 
@@ -42,6 +42,8 @@ private:
     clBranchDrawMode  drawMode;
     
     float   theta;
+    float   speed;
+    float   diffusion;
     
     int     age;
     int     ageOfDeath;
@@ -51,9 +53,11 @@ public:
     ~Branch();
     
 	void setup(const ofColor& color, const ofPoint& pos, const ofRectangle& b);
-	void update(const float& speed, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode);
+	void update(const float& speed, const int& length, const float& diffusion, const ofColor& color, clDrawAlphaMode alphaMode);
 	void draw();
-    void drawVbo();
+    inline void die() {
+        this->lifeState = CL_BRANCH_DYING;
+    }
     
     inline ofPoint getPosition() const {
         return b_pos;
@@ -66,9 +70,7 @@ public:
     }
     inline bool getIsAlive() const
     {
-        if (lifeState == CL_BRANCH_DEAD)
-            return false;
-        return true;
+        return lifeState == CL_BRANCH_SPAWNING || lifeState == CL_BRANCH_DYING;
     }
     
 	

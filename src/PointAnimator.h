@@ -20,7 +20,7 @@ class PointAnimator {
 public:
     void setup(const ofPoint& center);
     void update(float dt);
-    void moveCircular(float diff);
+    void moveCircular(float diff = 0.0f, bool immediate = true);
     void moveTo(const ofPoint& pos, bool immediate=true);
     
     ofPoint                 center;
