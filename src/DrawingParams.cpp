@@ -15,6 +15,7 @@ DrawingParams::DrawingParams(){
 void DrawingParams::setup(string name){
     parameters.setName(name);
     
+    parameters.add(bDrawBrush.set("Draw brush", true));
     parameters.add(maxBranches.set("Total branches", 250, 1, 500));
     parameters.add(bUseFlatColors.set("Flat colors", true));
     parameters.add(bFreeDraw.set("Freehand", false));

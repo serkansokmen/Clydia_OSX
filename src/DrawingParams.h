@@ -39,6 +39,7 @@ public:
     ofParameter<bool>       bFreeDraw;
     ofParameter<bool>       bUseFlatColors;
     ofParameter<bool>       bClearOnDraw;
+    ofParameter<bool>       bDrawBrush;
 };
 
 

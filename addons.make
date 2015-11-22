@@ -1,0 +1,4 @@
+ofxAnimatable
+ofxCv
+ofxGui
+ofxXmlSettings

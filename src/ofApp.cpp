@@ -49,7 +49,7 @@ void ofApp::update(){
     // app timebase, to send to all animatable objects
     float dt = 1.0f / 60.0f;
     
-    ofLog() << branches.size() << endl;
+//    ofLog() << branches.size() << endl;
     
     colorAnimator.update(dt);
     
@@ -135,11 +135,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    ofBackground(drawingParams.bgColor);
+    
     fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
     
     if (bDrawGui) {
         
-        if (animatorParams.enabled) {
+        if (animatorParams.enabled && drawingParams.bDrawBrush) {
             float diff = ofNormalize(drawingParams.branchDiffusion, DIFFUSION_MIN, DIFFUSION_MAX);
             ofColor aColor(drawingParams.bgColor);
             ofPushStyle();
@@ -170,12 +172,19 @@ void ofApp::keyPressed(int key) {
             bDrawGui = !bDrawGui;
             break;
         case 'c':
-            drawingParams.branchColor = ofColor(ofRandom(255.f), ofRandom(255.f), ofRandom(255.f), ofRandom(55.f) + 200.f);
+            ofLog() << ofNoise(ofGetElapsedTimef())*255.f << endl;
+            drawingParams.branchColor = ofColor(ofNoise(ofGetElapsedTimef())*255.f,
+                                                ofNoise(ofGetElapsedTimef())*255.f,
+                                                ofNoise(ofGetElapsedTimef())*255.f,
+                                                ofRandom(55.f) + 200.f);
             break;
         case 'd':
             drawingParams.branchDiffusion = ofRandom(DIFFUSION_MIN, ofLerp(DIFFUSION_MIN, DIFFUSION_MAX, .1));
         case 'D':
             drawingParams.branchDiffusion = ofRandom(ofLerp(DIFFUSION_MIN, DIFFUSION_MAX, .5), DIFFUSION_MAX);
+            break;
+        case 'A':
+            animatorParams.enabled = !animatorParams.enabled;
             break;
         case 'C':
             clearCanvas();
@@ -353,6 +362,7 @@ void ofApp::setupGui(){
     gui.add(saveBtn.setup("Save"));
     
     //    gui.setDefaultTextPadding(40);
+    gui.minimizeAll();
     
     trackingParams.enabled.addListener(this, &ofApp::toggleCamera);
     trackingParams.bUseHSV.addListener(this, &ofApp::toggleColorMode);
