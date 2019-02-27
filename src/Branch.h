@@ -1,11 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-
-#define CL_BRANCH_AGE_MIN           200
-#define CL_BRANCH_AGE_MAX           600
-#define CL_BRANCH_AGING_COEFF_MIN   1.0f
-#define CL_BRANCH_AGING_COEFF_MAX   4.0f
+#include "Constants.h"
 
 enum clBranchLifeState
 {

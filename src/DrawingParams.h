@@ -12,9 +12,7 @@
 #include "ofParameterGroup.h"
 #include "ofParameter.h"
 #include "ofMain.h"
-
-#define DIFFUSION_MIN       0.024
-#define DIFFUSION_MAX       0.16
+#include "Constants.h"
 
 class DrawingParams;
 

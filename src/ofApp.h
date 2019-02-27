@@ -7,6 +7,8 @@
 #include "PointAnimator.h"
 #include "ColorAnimator.h"
 
+#include "Constants.h"
+
 #include "DrawingParams.h"
 #include "AnimatorParams.h"
 #include "TrackingParams.h"
@@ -16,9 +18,8 @@
 #define IMAGE_DRAW_RES_Y    50
 #define DRAG_DRAW_RES       5
 
-
-class ofApp : public ofBaseApp{
-
+class ofApp : public ofBaseApp {
+    
 private:
     void toggleCamera(bool& isOpen);
     void toggleColorMode(bool& isHsv);
