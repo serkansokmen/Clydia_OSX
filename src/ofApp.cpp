@@ -370,6 +370,7 @@ void ofApp::setupGui(){
     gui.add(clearBtn.setup("Clear"));
     gui.add(bSaveWithBackground.set("Include Background", false));
     
+    gui.add(saveBtn.setup("Save (80x80)"));
     //    gui.setDefaultTextPadding(40);
 //    gui.minimizeAll();
     
