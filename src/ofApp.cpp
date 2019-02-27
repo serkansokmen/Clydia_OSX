@@ -212,7 +212,7 @@ void ofApp::clearCanvas(){
     pointAnimator.moveTo(ofGetWindowRect().getCenter(), true);
     branches.clear();
     ofColor c(drawingParams.bgColor);
-    fbo.begin();
+    canvasFbo.begin();
     ofClear(c.r, c.g, c.b, 0);
     canvasFbo.end();
 }
