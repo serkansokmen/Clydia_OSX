@@ -45,7 +45,7 @@ private:
     ofxButton       saveBtn;
     ofxPanel        gui;
     
-    ofFbo           fbo;
+    ofFbo           canvasFbo;
     
     ofPoint    mousePos;
     bool bIsMouseDown;

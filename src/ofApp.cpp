@@ -12,6 +12,9 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
+//    ofSetWindowShape(ofGetWidth() * 2, ofGetHeight() * 2);
+    ofSetWindowPosition((ofGetScreenWidth() - ofGetWindowWidth())/2,
+                        (ofGetScreenHeight() - ofGetWindowHeight())/2);
     
     this->mousePos = ofPoint(mouseX, mouseY, 0);
     
@@ -25,9 +28,9 @@ void ofApp::setup(){
     ofFbo::Settings settings;
     settings.numSamples = 4; // also try 8, if your GPU supports it
     settings.useDepth = true;
-    settings.width = ofGetWidth();
-    settings.height = ofGetHeight();
-    fbo.allocate(settings);
+    settings.width = CANVAS_WIDTH;
+    settings.height = CANVAS_HEIGHT;
+    canvasFbo.allocate(settings);
     
     clearCanvas();
     
@@ -116,7 +119,7 @@ void ofApp::update(){
     }
     
     // Draw to fbo
-    fbo.begin();
+    canvasFbo.begin();
     if (drawingParams.bClearOnDraw) {
         ofClear(0, 0, 0, 0);
     }
@@ -129,15 +132,19 @@ void ofApp::update(){
     }
     ofPopMatrix();
     ofDisableDepthTest();
-    fbo.end();
+    canvasFbo.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofBackground(drawingParams.bgColor);
+    if (drawingParams.bUseGradientBg) {
+        ofBackgroundGradient(drawingParams.bgColor, drawingParams.bgColor2);
+    } else {
+        ofBackground(drawingParams.bgColor);
+    }
     
-    fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
+    canvasFbo.draw(ofGetWindowRect());
     
     if (bDrawGui) {
         
@@ -207,7 +214,7 @@ void ofApp::clearCanvas(){
     ofColor c(drawingParams.bgColor);
     fbo.begin();
     ofClear(c.r, c.g, c.b, 0);
-    fbo.end();
+    canvasFbo.end();
 }
 
 //--------------------------------------------------------------
@@ -219,7 +226,6 @@ void ofApp::saveCanvas(){
     fbo.readToPixels(pixels);
     img.setFromPixels(pixels);
     img.save(filename);
-    clearCanvas();
 }
 
 //--------------------------------------------------------------
@@ -317,7 +323,10 @@ void ofApp::addBranchesFromImage(const ofImage& image, const ofVec2f& pos) {
 void ofApp::addBranchAt(const ofPoint& pos, const ofColor& color)
 {
     ofPtr<Branch> branch(new Branch());
-    branch->setup(color, pos, ofRectangle(0, 0, ofGetWidth(), ofGetHeight()));
+    ofPoint target;
+    target.x = ofMap(pos.x, 0, ofGetWindowWidth(), 0, CANVAS_HEIGHT * ofGetWindowWidth()/CANVAS_WIDTH);
+    target.y = ofMap(pos.y, 0, ofGetWindowHeight(), 0, CANVAS_HEIGHT);
+    branch->setup(color, target, ofGetWindowRect());
     branch->setDrawMode(CL_BRANCH_DRAW_LEAVES);
     branches.push_front(branch);
 }
@@ -355,27 +364,27 @@ void ofApp::setupGui(){
     parameters.setName("CLYD");
     parameters.add(drawingParams.parameters);
     parameters.add(animatorParams.parameters);
-    parameters.add(trackingParams.parameters);
+//    parameters.add(trackingParams.parameters);
     
     gui.setup(parameters);
     gui.add(clearBtn.setup("Clear"));
-    gui.add(saveBtn.setup("Save"));
+    gui.add(bSaveWithBackground.set("Include Background", false));
     
     //    gui.setDefaultTextPadding(40);
-    gui.minimizeAll();
+//    gui.minimizeAll();
     
-    trackingParams.enabled.addListener(this, &ofApp::toggleCamera);
-    trackingParams.bUseHSV.addListener(this, &ofApp::toggleColorMode);
+//    trackingParams.enabled.addListener(this, &ofApp::toggleCamera);
+//    trackingParams.bUseHSV.addListener(this, &ofApp::toggleColorMode);
+    gui.loadFromFile("settings.xml");
+    
     clearBtn.addListener(this, &ofApp::clearCanvas);
     saveBtn.addListener(this, &ofApp::saveCanvas);
-    
-    gui.loadFromFile("settings.xml");
 }
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-    trackingParams.enabled.removeListener(this, &ofApp::toggleCamera);
-    trackingParams.bUseHSV.removeListener(this, &ofApp::toggleColorMode);
+//    trackingParams.enabled.removeListener(this, &ofApp::toggleCamera);
+//    trackingParams.bUseHSV.removeListener(this, &ofApp::toggleColorMode);
     clearBtn.removeListener(this, &ofApp::clearCanvas);
     saveBtn.removeListener(this, &ofApp::saveCanvas);
 }
