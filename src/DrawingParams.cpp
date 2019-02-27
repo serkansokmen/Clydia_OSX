@@ -23,7 +23,10 @@ void DrawingParams::setup(string name){
     parameters.add(branchDiffusion.set("Branch diffusion", 0.08, DIFFUSION_MIN, DIFFUSION_MAX));
     parameters.add(bClearOnDraw.set("Clear on Draw", true));
     parameters.add(branchColor.set("Branch color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-    parameters.add(bgColor.set("BG color", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
+    parameters.add(bgColor.set("Background 1", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
+    parameters.add(bUseGradientBg.set("Gradient Background", false));
+    parameters.add(bgColor2.set("Background 2", bUseFlatColors ? ofColor::white : ofColor::black, ofColor::black, ofColor::white));
+    ofParameter<ofColor>    bgColor2;
 }
 
 void DrawingParams::draw(){

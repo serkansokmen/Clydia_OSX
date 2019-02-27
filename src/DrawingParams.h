@@ -31,6 +31,8 @@ public:
     ofParameterGroup        parameters;
     ofParameter<ofColor>    branchColor;
     ofParameter<ofColor>    bgColor;
+    ofParameter<bool>       bUseGradientBg;
+    ofParameter<ofColor>    bgColor2;
     ofParameter<int>        maxBranches;
     ofParameter<int>        branchLength;
     ofParameter<double>     branchDiffusion;
