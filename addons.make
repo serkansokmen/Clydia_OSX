@@ -1,4 +1,5 @@
 ofxAnimatable
 ofxCv
 ofxGui
+ofxOpenCv
 ofxXmlSettings
