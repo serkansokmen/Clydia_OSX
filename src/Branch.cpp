@@ -103,12 +103,10 @@ void Branch::draw()
             for (int i=0; i<positions.size(); i++) {
                 
                 if (i > 1) {
-                    ofVec2f current = *positions[i];
 //                    ofVec2f prev = *positions[i-1];
 //                    ofVec2f back = back - current;
-                    
                     vboMesh.addColor(color);
-                    vboMesh.addVertex(current);
+                    vboMesh.addVertex(ofVec3f(*positions[i]));
 //                    vboMesh.addColor(color);
 //                    vboMesh.addVertex(prev);
                 }
