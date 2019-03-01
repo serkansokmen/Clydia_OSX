@@ -1,6 +1,5 @@
 #include "ofApp.h"
 
-
 //--------------------------------------------------------------
 void ofApp::setup(){
     //------------------------------------------------
@@ -12,7 +11,7 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
-//    ofSetWindowShape(ofGetWidth() * 2, ofGetHeight() * 2);
+    ofSetWindowShape(ofGetWidth() * 2, ofGetHeight() * 2);
     ofSetWindowPosition((ofGetScreenWidth() - ofGetWindowWidth())/2,
                         (ofGetScreenHeight() - ofGetWindowHeight())/2);
     
@@ -28,6 +27,8 @@ void ofApp::setup(){
     ofFbo::Settings settings;
     settings.numSamples = 4; // also try 8, if your GPU supports it
     settings.useDepth = true;
+    settings.colorFormats.push_back(GL_RGBA);
+//    settings.colorFormats[0] = GL_RGBA;
     settings.width = CANVAS_WIDTH;
     settings.height = CANVAS_HEIGHT;
     canvasFbo.allocate(settings);
@@ -218,19 +219,27 @@ void ofApp::clearCanvas(){
 }
 
 //--------------------------------------------------------------
-void ofApp::saveCanvas(){
-    string filename = "Frames/clydia_" + ofToString(ofGetUnixTime()) + ".png";
+void ofApp::saveCanvas() {
+    string filename = "TB/clyd/other/" + ofToString(ofGetUnixTime()) + ".png";
+    
+    float scale = 2;
+    ofFbo resultFbo;
+    resultFbo.allocate(CANVAS_SIZE_80, CANVAS_SIZE_80);
+    resultFbo.begin();
+    ofClear(255, 255, 255, 0);
+    canvasFbo.draw(0, 0, resultFbo.getWidth(), resultFbo.getHeight());
+    resultFbo.end();
     
     ofImage img;
     ofPixels pixels;
-    fbo.readToPixels(pixels);
+    resultFbo.readToPixels(pixels);
     img.setFromPixels(pixels);
     img.save(filename);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-    bIsMouseDown = true;
+//    bIsMouseDown = true;
 }
 
 //--------------------------------------------------------------
@@ -270,7 +279,7 @@ void ofApp::mouseEntered(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    bIsMouseDown = false;
 }
 
 //--------------------------------------------------------------
@@ -324,8 +333,8 @@ void ofApp::addBranchAt(const ofPoint& pos, const ofColor& color)
 {
     ofPtr<Branch> branch(new Branch());
     ofPoint target;
-    target.x = ofMap(pos.x, 0, ofGetWindowWidth(), 0, CANVAS_HEIGHT * ofGetWindowWidth()/CANVAS_WIDTH);
-    target.y = ofMap(pos.y, 0, ofGetWindowHeight(), 0, CANVAS_HEIGHT);
+    target.x = ofMap(pos.x, 0, ofGetWindowWidth(), 0, canvasFbo.getWidth());
+    target.y = ofMap(pos.y, 0, ofGetWindowHeight(), 0, canvasFbo.getHeight());
     branch->setup(color, target, ofGetWindowRect());
     branch->setDrawMode(CL_BRANCH_DRAW_LEAVES);
     branches.push_front(branch);
@@ -368,7 +377,6 @@ void ofApp::setupGui(){
     
     gui.setup(parameters);
     gui.add(clearBtn.setup("Clear"));
-    gui.add(bSaveWithBackground.set("Include Background", false));
     
     gui.add(saveBtn.setup("Save (80x80)"));
     //    gui.setDefaultTextPadding(40);

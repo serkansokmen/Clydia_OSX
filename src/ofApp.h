@@ -46,6 +46,7 @@ private:
     ofxPanel        gui;
     
     ofFbo           canvasFbo;
+    ofTexture       canvasTexture;
     
     ofPoint    mousePos;
     bool bIsMouseDown;

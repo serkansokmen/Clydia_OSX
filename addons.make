@@ -2,4 +2,5 @@ ofxAnimatable
 ofxCv
 ofxGui
 ofxOpenCv
+ofxRingBufferTexture
 ofxXmlSettings

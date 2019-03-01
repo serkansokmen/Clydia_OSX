@@ -37,15 +37,14 @@
 #define CLYD_ANIMATOR_Radius_X          "CLYD:ANIMATOR:Radius_X"
 #define CLYD_ANIMATOR_Radius_Y          "CLYD:ANIMATOR:Radius_y"
 
+#define CANVAS_WIDTH                    1280 * 3
+#define CANVAS_HEIGHT                   1280 * 3
 #define CANVAS_SIZE_35                  4134
 #define CANVAS_SIZE_50                  5906
 #define CANVAS_SIZE_80                  9449
-#define CANVAS_WIDTH                    5906
-#define CANVAS_HEIGHT                   5906
 
 // branches
 #define CL_BRANCH_AGE_MIN           200.0f
 #define CL_BRANCH_AGE_MAX           600.0f
 #define CL_BRANCH_AGING_COEFF_MIN   1.0f
 #define CL_BRANCH_AGING_COEFF_MAX   4.0f
-
